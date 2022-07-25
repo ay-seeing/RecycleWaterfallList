@@ -1,0 +1,34 @@
+<view class="RecycleList">
+  <view style="height:{{testBeforeHeight}}rpx;border: 1rpx solid #ccc;" class="scroll-before">
+    无限滚动组件内部，列表上面的元素
+    <slot name="scroll-outer-before"></slot>
+  </view>
+  <view class="view-lists" id="{{recycleListContentId}}">
+    <view id="{{recycleListContentId}}-before">
+        <slot name="scroll-inner-before"></slot>
+    </view><!-- 无限滚动内容内部的元素高度需要单独计算 -->
+    <view class="fall">
+      <view class="fall-left" id="fallLeft">
+        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{leftFallData}}" wx:key="i" wx:for-index="pageI" data-dom="{{JSON.stringify(item.dom || '{}')}}" style="height: {{((item.dom && item.dom.height) ? (item.dom.height + 'px') : 'auto')}};">
+        <block wx:if="{{item}}">
+          <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
+            <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
+          </view>
+        </block>
+      </view>
+      </view>
+      <view class="fall-right" id="fallRight">
+        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{rightFallData}}" wx:key="i" wx:for-index="pageI" data-dom="{{JSON.stringify(item.dom || '{}')}}" style="height: {{((item.dom && item.dom.height) ? (item.dom.height + 'px') : 'auto')}};">
+          <block wx:if="{{item}}">
+            <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
+                <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="scroll-after">
+    <slot name="scroll-outer-after" wx:if="{{listData.length}}">加载中...</slot>
+  </view>
+</view>

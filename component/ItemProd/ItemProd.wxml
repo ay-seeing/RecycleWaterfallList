@@ -1,0 +1,4 @@
+<view class="ItemProd" style="height: {{item.pageNumber === 1 ? '200px' : '150px'}}">
+  <view>当前页面：{{item.curentP}}</view>
+  <view>{{item.pageNumber}}-{{item.index}}</view>
+</view>

@@ -1,0 +1,31 @@
+.RecycleList{
+    position:relative;
+    /* padding:100rpx 0; */
+    /* height:100vh; */
+    box-sizing: border-box;
+  }
+  .heightItem{
+    position:absolute;
+    left:0;
+    top:0;
+    height:300rpx;
+    transform: translateX(-300rpx);
+  }
+  #test{
+    /* padding:100rpx; */
+  }
+  .item-page{
+    /* height:6000rpx; */
+    /* display:flex;
+    flex-wrap: wrap; */
+  }
+  .item-page:last-child{
+    /* height:auto; */
+  }
+  .item{
+    /* width:40%;
+    margin-left:10%; */
+    border:1rpx solid #ccc;
+    padding:10rpx;
+    box-sizing:border-box;
+  }

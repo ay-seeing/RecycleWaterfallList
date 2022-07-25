@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "RecycleWaterfallList": "../component/RecycleWaterfallList/RecycleWaterfallList",
+    "ItemProd": "../component/ItemProd/ItemProd"
+  },
+  "onReachBottomDistance": 100,
+  "enablePullDownRefresh": true,
+  "navigationStyle": "custom"
+}

@@ -1,0 +1,15 @@
+<view class="page-detail">
+  <view class="page_before">组件外面元素</view>
+  
+  <RecycleWaterfallList id="my_recycle" generic:ItemProd="ItemProd" columnNumber="{{1}}" recycleListContentId="recycleList-content2" hasContour="{{false}}" apiInfo="{{apiInfo}}">
+    <view slot="scroll-outer-before" class="">11111</view>
+    <view slot="scroll-outer-after" class="">加载中。。。</view>
+  </RecycleWaterfallList>
+
+
+  <view class="c" bind:tap="changeApi">xiugai </view>
+</view>
+
+<template name="itemTemp">
+    234
+</template>
