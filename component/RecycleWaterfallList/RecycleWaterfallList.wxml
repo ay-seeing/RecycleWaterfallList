@@ -7,9 +7,9 @@
     <view id="{{recycleListContentId}}-before">
         <slot name="scroll-inner-before"></slot>
     </view><!-- 无限滚动内容内部的元素高度需要单独计算 -->
-    <view class="fall">
-      <view class="fall-left" id="fallLeft">
-        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{leftFallData}}" wx:key="i" wx:for-index="pageI" data-dom="{{JSON.stringify(item.dom || '{}')}}" style="height: {{((item.dom && item.dom.height) ? (item.dom.height + 'px') : 'auto')}};">
+    <view class="fall-warper">
+      <view class="fall-list" id="{{recycleListContentId}}-fallLeft">
+        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{leftFallData}}" wx:key="i" wx:for-index="pageI" data-h="{{item.height}}" style="height: {{(item.height ? (item.height + 'px') : 'auto')}};">
         <block wx:if="{{item}}">
           <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
             <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
@@ -17,8 +17,8 @@
         </block>
       </view>
       </view>
-      <view class="fall-right" id="fallRight">
-        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{rightFallData}}" wx:key="i" wx:for-index="pageI" data-dom="{{JSON.stringify(item.dom || '{}')}}" style="height: {{((item.dom && item.dom.height) ? (item.dom.height + 'px') : 'auto')}};">
+      <view class="fall-list" id="{{recycleListContentId}}-fallRight">
+        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{rightFallData}}" wx:key="i" wx:for-index="pageI" style="height: {{(item.height ? (item.height + 'px') : 'auto')}};">
           <block wx:if="{{item}}">
             <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
                 <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>

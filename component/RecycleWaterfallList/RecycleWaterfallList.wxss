@@ -1,31 +1,45 @@
 .RecycleList{
-    position:relative;
-    /* padding:100rpx 0; */
-    /* height:100vh; */
-    box-sizing: border-box;
-  }
-  .heightItem{
-    position:absolute;
-    left:0;
-    top:0;
-    height:300rpx;
-    transform: translateX(-300rpx);
-  }
-  #test{
-    /* padding:100rpx; */
-  }
-  .item-page{
-    /* height:6000rpx; */
-    /* display:flex;
-    flex-wrap: wrap; */
-  }
-  .item-page:last-child{
-    /* height:auto; */
-  }
-  .item{
-    /* width:40%;
-    margin-left:10%; */
-    border:1rpx solid #ccc;
-    padding:10rpx;
-    box-sizing:border-box;
-  }
+  position:relative;
+  /* padding:100rpx 0; */
+  /* height:100vh; */
+  box-sizing: border-box;
+}
+.heightItem{
+  position:absolute;
+  left:0;
+  top:0;
+  height:300rpx;
+  transform: translateX(-300rpx);
+}
+#test{
+  /* padding:100rpx; */
+}
+.item-page{
+  /* height:6000rpx; */
+  /* display:flex;
+  flex-wrap: wrap; */
+}
+.item-page:last-child{
+  /* height:auto; */
+}
+.fall-warper{
+  display:flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.fall-warper .fall-list{
+  padding-left:20rpx;
+  width:50%;
+  flex:1;
+}
+.fall-warper .fall-list:first-child{
+  padding-left:0;
+}
+.item{
+  /* width:40%;
+  margin-left:10%; */
+  margin-top:20rpx;
+  border:1rpx solid #ccc;
+  padding:10rpx;
+  box-sizing:border-box;
+}
