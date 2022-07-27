@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-07-27 11:58:43
+ * @LastEditTime: 2022-07-27 14:07:47
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -81,7 +81,7 @@ Component({
         },
         recycleListContentId: { // 无限列表id
             type: String,
-            value: 'recycleList-content'
+            value: 'recycleWaterList-content'
         },
         hasContour: {   // 里面的每个item是否是等高的
             type: Boolean,
@@ -144,8 +144,7 @@ Component({
     methods: {
         // 获取圈子数据方法
         async getFeeds() {
-            console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
-            // wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
+            wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
             // 如果没有更多，则直接返回
             // 判断如果正在加载，则进行节流处理，不请求下一次的接口请求
             if (!this.data.hasMore || this.data.hasLoading) {
@@ -160,8 +159,7 @@ Component({
                 return;
             }
 
-            console.log('component----', '加载数据-ing',)
-            // wx.getStorageSync('debug') && console.log('component----', '加载数据-ing',)
+            wx.getStorageSync('debug') && console.log('component----', '加载数据-ing',)
             // console.log('this.data._apiData', this.data._apiData)
             let curentP = this.data._apiData.offset/this.data._apiData.limit;
             // 请求接口前设置loading状态
@@ -239,7 +237,7 @@ Component({
         },
         // 瀑布流渲染
         async waterfallRender(list){
-            console.log('list-', list)
+            wx.getStorageSync('debug') && console.log('list-', list)
             // 如果没有数据则不进行瀑布流渲染
             if (list.length <= 0) {
                 return;
@@ -280,14 +278,14 @@ Component({
                                 }
                             });
                             await setTimeout(async ()=>{
-                                console.log('leftFallData-1---,准备计算高度',i, leftFallD, this.data._currentPageNumber)
+                                wx.getStorageSync('debug') && console.log('leftFallData-1---,准备计算高度',i, leftFallD, this.data._currentPageNumber)
                                 // console.log('rightFallData-1---', rightFallD)
                                 // 插入结束，获取当前页的高度
                                 await this.getPrevPageHeight(this.data._currentPageNumber, 'left');
                                 await this.getPrevPageHeight(this.data._currentPageNumber, 'right');
 
                                 // 标注瀑布流渲染结束
-                                console.log('l-瀑布流渲染结束--', this.data._currentPageNumber, '--------------------')
+                                wx.getStorageSync('debug') && console.log('l-瀑布流渲染结束--', this.data._currentPageNumber, '--------------------')
                                 this.data._hasWaterfallRenderEnd = true;
                             }, 0);
                         }
@@ -319,17 +317,17 @@ Component({
                                     delete item.list;
                                 }
                             });
-                            await setTimeout(async ()=>{
+                            // await setTimeout(async ()=>{
                                 // console.log('leftFallData-1---', leftFallD)
-                                console.log('rightFallData-1---,准备计算高度', i, rightFallD, this.data._currentPageNumber)
+                                wx.getStorageSync('debug') && console.log('rightFallData-1---,准备计算高度', i, rightFallD, this.data._currentPageNumber)
                                 // 插入结束，获取当前页的高度
                                 await this.getPrevPageHeight(this.data._currentPageNumber, 'left');
                                 await this.getPrevPageHeight(this.data._currentPageNumber, 'right');
 
                                 // 标注瀑布流渲染结束
-                                console.log('r-瀑布流渲染结束--', this.data._currentPageNumber, '--------------------');
+                                wx.getStorageSync('debug') && console.log('r-瀑布流渲染结束--', this.data._currentPageNumber, '--------------------');
                                 this.data._hasWaterfallRenderEnd = true;
-                            }, 0)
+                            // }, 0)
                         }
                     });
                 }
@@ -383,7 +381,7 @@ Component({
                 }
             });
 
-            console.log('this.data._bakListData----2', JSON.parse(JSON.stringify(listData)) ,JSON.parse(JSON.stringify(this.data._bakListData)));
+            wx.getStorageSync('debug') && console.log('this.data._bakListData----2', JSON.parse(JSON.stringify(listData)) ,JSON.parse(JSON.stringify(this.data._bakListData)));
 
             // 根据页码获取当前页码前后1页的数据，将对应页码的数据全部替换掉
             if(this.data.scrollPageNumber>=1){
@@ -410,7 +408,7 @@ Component({
                 }
             });
 
-            console.log('leftData----', leftData)
+            wx.getStorageSync('debug') && console.log('leftData----', leftData)
 
             // 将最近的3页数据显示出来
             this.setData({
@@ -439,7 +437,7 @@ Component({
 
                 itemPage.boundingClientRect(function (res2) {
                     if(res2){
-                        console.log('高度获取结果：', self.data._bakListData[pageN][dis], res2.height)
+                        wx.getStorageSync('debug') && console.log('高度获取结果：', self.data._bakListData[pageN][dis], res2.height)
                         self.data._bakListData[pageN][dis] = {
                             list: self.data._bakListData[pageN][dis].list,
                             height: res2.height,
@@ -487,7 +485,7 @@ Component({
                 if(self.data._bakScrollPageNumber === scrollP){
                     return;
                 }
-                console.log('scrollP---', scrollP)
+                wx.getStorageSync('debug') && console.log('scrollP---', scrollP)
 
                 // 获取当前的scroll页码，这和接口请求的当前页面不一样
                 // 根据滚动位置和单个模块高度以及每页多少个来计算当前是第几页
@@ -503,7 +501,7 @@ Component({
             }).exec();
         },
 
-        // 无限滚动列表内部，所有滚动元素前面的元素高度有变化后需要调用下修正差值，也就是在 #recycleList-content 内部，第一个 recycleList-item 前面的元素
+        // 无限滚动列表内部，所有滚动元素前面的元素高度有变化后需要调用下修正差值，也就是在 #recycleWaterList-content 内部，第一个 recycleList-item 前面的元素
         getScrollAfterHeight(){
             let self = this;
             var query = this.createSelectorQuery()
