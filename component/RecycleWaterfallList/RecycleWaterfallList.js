@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-07-26 20:17:32
+ * @LastEditTime: 2022-07-27 11:29:05
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -144,14 +144,24 @@ Component({
     methods: {
         // 获取圈子数据方法
         async getFeeds() {
-            wx.getStorageSync('debug') && console.log('component----', '加载数据-start')
+            console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
+            // wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
             // 如果没有更多，则直接返回
             // 判断如果正在加载，则进行节流处理，不请求下一次的接口请求
-            if (!this.data.hasMore || this.data.hasLoading || !this.data._hasWaterfallRenderEnd) {
+            if (!this.data.hasMore || this.data.hasLoading) {
                 return;
             }
 
-            wx.getStorageSync('debug') && console.log('component----', '加载数据-ing',)
+            // 如果还在渲染，则300ms后再执行
+            if(!this.data._hasWaterfallRenderEnd){
+                setTimeout(()=>{
+                    this.getFeeds();
+                }, 300);
+                return;
+            }
+
+            console.log('component----', '加载数据-ing',)
+            // wx.getStorageSync('debug') && console.log('component----', '加载数据-ing',)
             // console.log('this.data._apiData', this.data._apiData)
             let curentP = this.data._apiData.offset/this.data._apiData.limit;
             // 请求接口前设置loading状态
@@ -166,7 +176,6 @@ Component({
                     // this.data.hasLoading=false;
                     this.setData({
                         hasLoading: false,
-                        _hasWaterfallRenderEnd: false,
                     });
                     res();
                 }, 1000)
@@ -230,8 +239,12 @@ Component({
         },
         // 瀑布流渲染
         async waterfallRender(list){
-            console.log('list-', list.length, this.data._apiData.limit)
-            
+            console.log('list-', list)
+            // 如果还在进行瀑布流渲染，则不让重新渲染，否则会有问题
+            if (list.length <= 0) {
+                return;
+            }
+            this.data._hasWaterfallRenderEnd = false;
             for(var i=0;i<list.length;i++){
             // list.forEach((item, i)=>{
                 // console.log('-', i)
@@ -259,17 +272,24 @@ Component({
                     this.setData({
                         leftFallData: leftFallD,
                     },async ()=>{
-                        if(i === this.data._apiData.limit - 1){
-                            console.log('leftFallData-1---',i, leftFallD, this.data._currentPageNumber)
-                            // console.log('rightFallData-1---', rightFallD)
-                            // 插入结束，获取当前页的高度
-                            await this.getPrevPageHeight(this.data._currentPageNumber, 'left');
-                            await this.getPrevPageHeight(this.data._currentPageNumber, 'right');
-
-                            // 标注瀑布流渲染结束
-                            this.setData({
-                                _hasWaterfallRenderEnd: true,
+                        if(i === this.data._apiData.limit){
+                            // 判断，如果this.data._bakListData 每个元素里面有left和right数据，那么就删除list数据，减少数据量
+                            this.data._bakListData.forEach((item)=>{
+                                if(item.left){
+                                    delete item.list;
+                                }
                             });
+                            await setTimeout(async ()=>{
+                                console.log('leftFallData-1---,准备计算高度',i, leftFallD, this.data._currentPageNumber)
+                                // console.log('rightFallData-1---', rightFallD)
+                                // 插入结束，获取当前页的高度
+                                await this.getPrevPageHeight(this.data._currentPageNumber, 'left');
+                                await this.getPrevPageHeight(this.data._currentPageNumber, 'right');
+
+                                // 标注瀑布流渲染结束
+                                console.log('l-瀑布流渲染结束--', this.data._currentPageNumber, '--------------------')
+                                this.data._hasWaterfallRenderEnd = true;
+                            }, 0);
                         }
                     });
                 }else{
@@ -292,29 +312,31 @@ Component({
                     this.setData({
                         rightFallData: rightFallD,
                     }, async ()=>{
-                        if(i === this.data._apiData.limit - 1){
-                            // console.log('leftFallData-1---', leftFallD)
-                            console.log('rightFallData-1---', i, rightFallD, this.data._currentPageNumber)
-                            // 插入结束，获取当前页的高度
-                            await this.getPrevPageHeight(this.data._currentPageNumber, 'left');
-                            await this.getPrevPageHeight(this.data._currentPageNumber, 'right');
-
-                            // 标注瀑布流渲染结束
-                            this.setData({
-                                _hasWaterfallRenderEnd: true,
+                        if(i === this.data._apiData.limit){
+                            // 判断，如果this.data._bakListData 每个元素里面有left和right数据，那么就删除list数据，减少数据量
+                            this.data._bakListData.forEach((item)=>{
+                                if(item.left){
+                                    delete item.list;
+                                }
                             });
+                            await setTimeout(async ()=>{
+                                // console.log('leftFallData-1---', leftFallD)
+                                console.log('rightFallData-1---,准备计算高度', i, rightFallD, this.data._currentPageNumber)
+                                // 插入结束，获取当前页的高度
+                                await this.getPrevPageHeight(this.data._currentPageNumber, 'left');
+                                await this.getPrevPageHeight(this.data._currentPageNumber, 'right');
+
+                                // 标注瀑布流渲染结束
+                                console.log('r-瀑布流渲染结束--', this.data._currentPageNumber, '--------------------');
+                                this.data._hasWaterfallRenderEnd = true;
+                            }, 0)
                         }
                     });
                 }
             // });
             }
 
-            // 判断，如果this.data._bakListData 每个元素里面有left和right数据，那么就删除list数据，减少数据量
-            this.data._bakListData.forEach((item)=>{
-                if(item.left){
-                    delete item.list;
-                }
-            });
+            
         },
         // 左右高度对比
         diffLeftAndRightHeight(){
@@ -323,8 +345,8 @@ Component({
             // 获取左边高度
             return new Promise((resolve, reject)=>{
                 let query = this.createSelectorQuery();
-                query.select(`#${this.data.recycleListContentId}-fallLeft`).boundingClientRect();
-                query.select(`#${this.data.recycleListContentId}-fallRight`).boundingClientRect();
+                query.select(`#${this.data.recycleListContentId}-fallLeft`).boundingClientRect() -100;
+                query.select(`#${this.data.recycleListContentId}-fallRight`).boundingClientRect() -100;
                 query.exec((res) => {
                     if(res && res.length && res[0]) {
                         leftHeight = res[0].height;
@@ -337,6 +359,11 @@ Component({
         },
         // 根据滚动页码获取需要显示数据
         getShowData(){
+            // 如果还在进行瀑布流渲染，则不让重新渲染，否则会有问题
+            if (!this.data._hasWaterfallRenderEnd) {
+                return;
+            }
+
             let listData = []
             let unSx = [];
             // 设置数据有多少页
@@ -412,7 +439,7 @@ Component({
 
                 itemPage.boundingClientRect(function (res2) {
                     if(res2){
-                        // console.log('self.data._bakListData[pageN][dis]', self.data._bakListData[pageN][dis])
+                        console.log('高度获取结果：', self.data._bakListData[pageN][dis], res2.height)
                         self.data._bakListData[pageN][dis] = {
                             list: self.data._bakListData[pageN][dis].list,
                             height: res2.height,
@@ -436,7 +463,7 @@ Component({
                 // 判断左右两边，哪边矮，则以哪边的高度计算翻页的页码
                 let offsetLeftTop = Math.abs(res.top-self.data._showHeight+self.data._diffHeight);
                 let offsetRightTop = Math.abs(res.top-self.data._showHeight+self.data._diffHeight);
-                console.log('------', offsetLeftTop, self.data._bakListData)
+                // console.log('------', offsetLeftTop, self.data._bakListData, self.data._bakListData.length, self.data._hasWaterfallRenderEnd)
                 self.data._bakListData.forEach((item, i)=>{
                     if(offsetLeftTop >= 0 && offsetRightTop >= 0){
                         scrollP = i;
@@ -446,12 +473,17 @@ Component({
                         if(item.right && item.right.height){
                             offsetRightTop -= item.right.height;
                         }
+                        // if(item.list){
+                        //     offsetLeftTop -= item.left.height;
+                        //     offsetRightTop -= item.right.height;
+                        // }
                         
                     }
                 });
                 // console.log('scrollP---', scrollP)
 
                 // 判断上一次的备份页码和现在计算出来的页码是否相同，如果相同就不做处理（目的优化性能）
+                // console.log(self.data._bakScrollPageNumber, scrollP)
                 if(self.data._bakScrollPageNumber === scrollP){
                     return;
                 }
