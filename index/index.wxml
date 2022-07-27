@@ -7,7 +7,7 @@
   </RecycleWaterfallList>
 
 
-  <view class="c" bind:tap="changeApi">xiugai </view>
+  <!-- <view class="c" bind:tap="changeApi">xiugai </view> -->
 </view>
 
 <template name="itemTemp">

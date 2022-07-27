@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-07-27 11:29:05
+ * @LastEditTime: 2022-07-27 11:58:43
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -240,7 +240,7 @@ Component({
         // 瀑布流渲染
         async waterfallRender(list){
             console.log('list-', list)
-            // 如果还在进行瀑布流渲染，则不让重新渲染，否则会有问题
+            // 如果没有数据则不进行瀑布流渲染
             if (list.length <= 0) {
                 return;
             }
@@ -359,7 +359,7 @@ Component({
         },
         // 根据滚动页码获取需要显示数据
         getShowData(){
-            // 如果还在进行瀑布流渲染，则不让重新渲染，否则会有问题
+            // 如果还在进行瀑布流渲染，则不让重新计算，否则会有问题
             if (!this.data._hasWaterfallRenderEnd) {
                 return;
             }
