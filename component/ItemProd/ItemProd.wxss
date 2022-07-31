@@ -1,5 +1,7 @@
 .ItemProd{
   min-height:200rpx;
   background:#f0f0f0;
-  width:300rpx;
+  border:1rpx solid #ccc;
+  padding:10rpx;
+  box-sizing:border-box;
 }

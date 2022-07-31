@@ -3,6 +3,7 @@
   /* padding:100rpx 0; */
   /* height:100vh; */
   box-sizing: border-box;
+  overflow: hidden;
 }
 .heightItem{
   position:absolute;
@@ -29,6 +30,7 @@
 }
 .fall-warper .fall-list{
   padding-left:20rpx;
+  padding-top:1rpx;
   width:50%;
   flex:1;
 }
@@ -38,8 +40,20 @@
 .item{
   /* width:40%;
   margin-left:10%; */
-  margin-top:20rpx;
-  border:1rpx solid #ccc;
-  padding:10rpx;
-  box-sizing:border-box;
+  padding-top:20rpx;
+}
+.invisible-list{
+  position:absolute;
+  left:-900rpx;
+  top:0;
+  width:800rpx;
+}
+.invisible-item{
+  float:left;
+}
+.invisible-list .ItemProd{
+  background:#ccc;
+}
+.invisible-list .item{
+  border-color:#000;
 }
