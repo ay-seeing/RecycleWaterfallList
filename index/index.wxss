@@ -11,3 +11,6 @@
   background:#fff;
   border:2rpx solid #ccc;
 }
+.invisible-list .ItemProd{
+  background:#ccc;
+}
