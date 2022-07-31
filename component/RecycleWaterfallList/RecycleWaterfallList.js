@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-07-31 17:11:26
+ * @LastEditTime: 2022-07-31 17:17:21
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -294,7 +294,7 @@ Component({
                             this.data._bakListData[this.data._currentPageNumber].left = leftFallD;
                             this.data._bakListData[this.data._currentPageNumber].right = rightFallD;
 
-                            console.log(211111, leftFallD)
+                            // console.log(211111, leftFallD)
                             // 标注瀑布流渲染结束
                             this.data._hasWaterfallRenderEnd = true;
 
@@ -325,7 +325,7 @@ Component({
         },
         // 根据滚动页码获取需要显示数据
         getShowData(){
-            console.log('this.data._hasWaterfallRenderEnd--', this.data._hasWaterfallRenderEnd, this.data.scrollPageNumber, this.data._bakListData)
+            // console.log('this.data._hasWaterfallRenderEnd--', this.data._hasWaterfallRenderEnd, this.data.scrollPageNumber, this.data._bakListData)
             // 如果还在进行瀑布流渲染，则不让重新计算，否则会有问题
             if (!this.data._hasWaterfallRenderEnd) {
                 return;
@@ -399,7 +399,7 @@ Component({
                 // 判断左右两边，哪边矮，则以哪边的高度计算翻页的页码
                 let offsetLeftTop = Math.abs(res.top-self.data._showHeight+self.data._diffHeight);
                 let offsetRightTop = Math.abs(res.top-self.data._showHeight+self.data._diffHeight);
-                console.log('------', offsetLeftTop, self.data._bakListData, self.data._bakListData.length, self.data._hasWaterfallRenderEnd)
+                // console.log('------', offsetLeftTop, self.data._bakListData, self.data._bakListData.length, self.data._hasWaterfallRenderEnd)
                 self.data._bakListData.forEach((item, i)=>{
                     if(offsetLeftTop >= 0 && offsetRightTop >= 0){
                         scrollP = i;
