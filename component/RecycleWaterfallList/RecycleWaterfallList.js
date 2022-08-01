@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-01 16:45:38
+ * @LastEditTime: 2022-08-01 17:07:18
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -34,6 +34,7 @@ js： 在父组件的 onPageScroll 和 onReachBottom 事件里面分别调用组
 注意：
 1、一个页面只能使用一个无限滚动组件，否则会有问题。
 2、因为是瀑布流，所以在渲染速度方面会稍慢一些
+3、scroll-outer-after 内容不能太高，否则会有计算问题
 
 
 
@@ -44,6 +45,7 @@ js： 在父组件的 onPageScroll 和 onReachBottom 事件里面分别调用组
 apiInfo    必填, api请求的一些参数，因为接口的 url 是必填
 id    必填，组件的id，用于父组件调用组件内部方法
 recycleListContentId   选填，组件内交互id，随意填写
+columnNumber    选填，瀑布流的列数，默认2，目前组件css样式支持2-4列，大于4列需要自己写css样式
 
 */
 Component({
@@ -112,7 +114,7 @@ Component({
 
 
         // -------------------以下为纯数据字段----------------------
-        
+
         _bakScrollPageNumber: 0,   // 上一次的页码，主要是用来对比页码是否改变更换数据
         _bakListData: [],  // 数据备份
         // _bakListData 数据格式
@@ -157,7 +159,9 @@ Component({
             this.data._currentPageNumber =0,  // 最后一次请求接口的页码
             this.data._showHeight = 0, // 可视区域高度
             this.data._diffHeight = 0,  // 无限滚动列表内部，第一个元素前面距离滚动列表顶部距离
-            this.data._apiData = { "limit": 30, "offset": 0 },
+            this.data._apiData = {
+                ...this.data.apiData,
+            } || { "limit": 30, "offset": 0 },
             this.data._hasWaterfallRenderEnd = true,   // 瀑布流是否渲染结束
 
             // 以下是需要渲染的数据

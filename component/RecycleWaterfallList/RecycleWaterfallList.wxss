@@ -33,6 +33,12 @@
   width:50%;
   flex:1;
 }
+.fall-warper-3 .fall-list{
+  width: 33.33%;
+}
+.fall-warper-4 .fall-list{
+  width: 25%;
+}
 .fall-warper .fall-list:first-child{
   padding-left:0;
 }
@@ -57,4 +63,8 @@
 }
 .invisible-list .item{
   border-color:#000;
+}
+.recycle-loadding{
+  text-align:center;
+  padding:10rpx 0;
 }

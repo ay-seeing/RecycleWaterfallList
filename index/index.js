@@ -46,7 +46,7 @@ function throttle(fn, delay, immediate, debounce) {
 Page({
   data: {
     apiInfo: {
-      count: 20,
+      count: 40,
     }
   },
 
