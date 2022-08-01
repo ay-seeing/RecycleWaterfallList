@@ -30,7 +30,6 @@
 }
 .fall-warper .fall-list{
   padding-left:20rpx;
-  padding-top:1rpx;
   width:50%;
   flex:1;
 }
@@ -40,6 +39,8 @@
 .item{
   /* width:40%;
   margin-left:10%; */
+
+  /* 每个元素间的间距使用pading不要使用margin，不然不好计算 */
   padding-top:20rpx;
 }
 .invisible-list{

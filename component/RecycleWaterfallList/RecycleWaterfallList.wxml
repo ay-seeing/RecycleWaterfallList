@@ -8,23 +8,16 @@
         <slot name="scroll-inner-before"></slot>
     </view><!-- 无限滚动内容内部的元素高度需要单独计算 -->
     <view class="fall-warper">
-      <view class="fall-list" id="{{recycleListContentId}}-fallLeft">
-        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{leftFallData}}" wx:key="index" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};">
-        <block wx:if="{{item}}">
-          <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
-            <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
+      <view class="fall-list fall-list-{{columnNumber}}" id="{{recycleListContentId}}-{{index}}" wx:for="{{columnNumber}}" wx:for-item="{{columnItem}}" wx:key="index" data-c="{{index}}">
+        <block wx:if="{{listData[index]}}">
+          <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{listData[index]}}" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};" wx:key="pageI">
+            <block wx:if="{{item}}">
+              <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
+                <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
+              </view>
+            </block>
           </view>
         </block>
-      </view>
-      </view>
-      <view class="fall-list" id="{{recycleListContentId}}-fallRight">
-        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{rightFallData}}" wx:key="index" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};">
-          <block wx:if="{{item}}">
-            <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
-                <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
-            </view>
-          </block>
-        </view>
       </view>
     </view>
   </view>
