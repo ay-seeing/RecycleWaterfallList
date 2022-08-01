@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-07-31 17:17:21
+ * @LastEditTime: 2022-08-01 17:09:56
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -129,6 +129,32 @@ Component({
      * 组件的方法列表
      */
     methods: {
+        init(){
+            // 以下为纯数据字段
+            this.data._bakScrollPageNumber = 0,   // 上一次的页码，主要是用来对比页码是否改变更换数据
+            this.data._bakListData = [],  // 数据备份
+            this.data._currentPageNumber =0,  // 最后一次请求接口的页码
+            this.data._showHeight = 0, // 可视区域高度
+            this.data._diffHeight = 0,  // 无限滚动列表内部，第一个元素前面距离滚动列表顶部距离
+            this.data._apiData = {
+                ...this.data.apiData,
+            } || { "limit": 30, "offset": 0 },
+            this.data._hasWaterfallRenderEnd = true,   // 瀑布流是否渲染结束
+
+            // 以下是需要渲染的数据
+            this.setDate({
+                hasMore: true,
+                leftFallData: [],   // 瀑布流左边
+                rightFallData: [],   // 瀑布流右边
+                scrollPageNumber:0,   // 可视区域的页码
+                hasLoading: false,   // 是否正在获取数据
+
+                invisibleList: [], // 不可见list渲染
+            }, ()=>{
+                // 获取数据
+                this.getFeeds();
+            });
+        },
         // 获取圈子数据方法
         async getFeeds() {
             wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
@@ -189,7 +215,7 @@ Component({
 
             let { content } = resp;
             if (resp.error_num === 0 && content) {
-                let list = content.list;
+                let list = content.list || [];
 
                 // 当前页数
                 this.data._currentPageNumber = curentP;
