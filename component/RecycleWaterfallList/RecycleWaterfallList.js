@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-01 17:07:18
+ * @LastEditTime: 2022-08-01 17:28:15
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -318,7 +318,7 @@ Component({
                             let arrayListH = res[self.data.columnNumber];
 
                             // 训话当前页码所有的单元元素列表，根据高度计算出每个item应该放在哪一行
-                            var i=0
+                            let i=0
                             for(i;i<arrayListH.length;i++){
                                 // console.log('i', arrayListH[i])
                                 let item = list[i];
@@ -326,7 +326,12 @@ Component({
                                 let targetColumn = 0;  // 标识哪列最矮
 
                                 // 高度对比
-                                targetColumn = self.getArrayMin(currentPagetH);
+                                let columnDiffH = [];
+                                listH.forEach((item, i)=>{
+                                    columnDiffH[i] = item + currentPagetH[i];
+                                    // console.log()
+                                });
+                                targetColumn = self.getArrayMin(columnDiffH);
 
                                 currentPagetH[targetColumn] += arrayListH[i].height;
 
