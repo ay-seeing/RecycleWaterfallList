@@ -82,7 +82,7 @@ Page({
     wx.getStorageSync('debug') && console.log('page----', '触底')
     // 无限列表-获取组件并触发组件内触底加载函数， my_recycle 为组件id
     let myRecycle = this.selectComponent('#my_recycle');
-    myRecycle.getFeeds();
+    myRecycle.getDatas();
   },
 
   changeApi(){
