@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-09 15:58:06
+ * @LastEditTime: 2022-08-09 16:12:31
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -26,7 +26,7 @@ js： 在父组件的 onPageScroll 和 onReachBottom 事件里面分别调用组
   onReachBottom(){
     // // 无限不能动-获取组件并触发组件内触底加载函数， my_recycle 为组件id
     let myRecycle = this.selectComponent('#my_recycle');
-    myRecycle.getFeeds();
+    myRecycle.getDatas();
   },
 ...
 
@@ -89,7 +89,7 @@ Component({
             });
         
             // 获取数据
-            this.getFeeds();
+            this.getDatas();
         }
     },
     data: {
@@ -132,7 +132,6 @@ Component({
             this.data._bakScrollPageNumber = 0,   // 上一次的页码，主要是用来对比页码是否改变更换数据
             this.data._bakListData = [],  // 数据备份
             this.data._currentPageNumber =0,  // 最后一次请求接口的页码
-            this.data._showHeight = 0, // 可视区域高度
             this.data._diffHeight = 0,  // 无限滚动列表内部，第一个元素前面距离滚动列表顶部距离
             this.data._apiData = {
                 ...this.data._apiData,
@@ -149,11 +148,11 @@ Component({
                 hasLoading: false,   // 是否正在获取数据
             }, ()=>{
                 // 获取数据
-                this.getFeeds();
+                this.getDatas();
             });
         },
         // 获取圈子数据方法
-        async getFeeds() {
+        async getDatas() {
             wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
             // 如果没有更多，则直接返回
             // 判断如果正在加载，则进行节流处理，不请求下一次的接口请求
@@ -164,7 +163,7 @@ Component({
             // 如果还在渲染，则300ms后再执行
             if(!this.data._hasWaterfallRenderEnd){
                 setTimeout(()=>{
-                    this.getFeeds();
+                    this.getDatas();
                 }, 300);
                 return;
             }
