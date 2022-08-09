@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-01 17:12:02
+ * @LastEditTime: 2022-08-09 15:53:08
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -188,6 +188,16 @@ Component({
                 }, 1000)
             });
             wx.getStorageSync('debug') && console.log('component----', '加载数据-end')
+            
+            // const res = await app.$fetch({
+            // url: this.data.apiInfo.url,
+            // data: {
+            //     ...this.data.apiInfo.apiData,
+            //     pageParameter: JSON.stringify(this.data._apiData)
+            // },
+            // showLoading: true,
+            // });
+            // if (res.error_num === 0 ) {}
             
             // 请求接口
             let resp = {};
