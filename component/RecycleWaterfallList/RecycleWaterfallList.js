@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-01 17:09:56
+ * @LastEditTime: 2022-08-09 15:55:59
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -137,7 +137,8 @@ Component({
             this.data._showHeight = 0, // 可视区域高度
             this.data._diffHeight = 0,  // 无限滚动列表内部，第一个元素前面距离滚动列表顶部距离
             this.data._apiData = {
-                ...this.data.apiData,
+                ...this.data._apiData,
+                offset: 0,
             } || { "limit": 30, "offset": 0 },
             this.data._hasWaterfallRenderEnd = true,   // 瀑布流是否渲染结束
 
@@ -192,6 +193,16 @@ Component({
                 }, 1000)
             });
             wx.getStorageSync('debug') && console.log('component----', '加载数据-end')
+
+            // const res = await app.$fetch({
+            // url: this.data.apiInfo.url,
+            // data: {
+            //     ...this.data.apiInfo.apiData,
+            //     pageParameter: JSON.stringify(this.data._apiData)
+            // },
+            // showLoading: true,
+            // });
+            // if (res.error_num === 0 ) {}
             
             // 请求接口
             let resp = {};
