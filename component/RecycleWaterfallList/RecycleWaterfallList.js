@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-07-31 17:17:21
+ * @LastEditTime: 2022-08-10 09:50:59
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -54,18 +54,12 @@ Component({
     },
     properties: {
         apiInfo: {   // api相关信息
-            url: {
-                type: String,
-                value: '',
-            },
-            apiData: {  // 除翻页外的其他接口参数，但不包含 offset 和 limit
-                type: Object,
-                value: {},
-            },
-            count: {  // 每页几个
-                type: Number,
-                value: 30,
-            },
+            type: Object,
+            value: {
+                url: '',
+                apiData: { }, // 除翻页外的其他接口参数，但不包含 offset 和 limit
+                count: 30,  // 每页几个
+            }
         },
         // columnNumber: { // 一行显示几个
         //     type: Number,
