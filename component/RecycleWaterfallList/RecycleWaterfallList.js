@@ -56,18 +56,12 @@ Component({
     },
     properties: {
         apiInfo: {   // api相关信息
-            url: {
-                type: String,
-                value: '',
-            },
-            apiData: {  // 除翻页外的其他接口参数，但不包含 offset 和 limit
-                type: Object,
-                value: {},
-            },
-            count: {  // 每页几个
-                type: Number,
-                value: 30,
-            },
+            type: Object,
+            value: {
+                url: '',
+                apiData: { }, // 除翻页外的其他接口参数，但不包含 offset 和 limit
+                count: 30,  // 每页几个
+            }
         },
         columnNumber: { // 几列，默认2列
             type: Number,
