@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-10 09:49:55
+ * @LastEditTime: 2022-08-12 11:40:32
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -52,7 +52,16 @@ Component({
       pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
       styleIsolation: 'apply-shared',
     },
+    externalClasses: ['recycle-box-class', 'recycle-list-class', 'recycle-item-class'],  // 将父级的样式传给子组件使用
     properties: {
+        initList: {// 父组件传入初始化list
+            type: Array,
+            value: [],
+        }, 
+        initHasMore: {  // 和传入的初始值配合使用，如果传入初始值时也同时没有更多，则组件内不会进行翻页加载了
+            type: Boolean,
+            value:true,
+        },
         apiInfo: {   // api相关信息
             type: Object,
             value: {
@@ -107,6 +116,8 @@ Component({
         _diffHeight: 0,  // 无限滚动列表内部，第一个元素前面距离滚动列表顶部距离
         _apiData: { "limit": 30, "offset": 0 },
         _hasWaterfallRenderEnd: true,   // 瀑布流是否渲染结束
+
+        _hasMock: true,  // 是否mock，开发时这里个字段要改成false
     },
     observers: {  // 数据变化监听
         'apiInfo': function(opt){
@@ -117,6 +128,11 @@ Component({
                     limit: opt.count,
                 },
             })
+        },
+        'initHasMore': function(newVal){
+            this.setData({
+                hasMore: newVal,
+            });
         },
     },
     /**
@@ -136,8 +152,8 @@ Component({
             this.data._hasWaterfallRenderEnd = true,   // 瀑布流是否渲染结束
 
             // 以下是需要渲染的数据
-            this.setDate({
-                hasMore: true,
+            this.setData({
+                hasMore: this.data.initHasMore !== undefined ? this.data.initHasMore : true,
                 leftFallData: [],   // 瀑布流左边
                 rightFallData: [],   // 瀑布流右边
                 scrollPageNumber:0,   // 可视区域的页码
@@ -151,10 +167,17 @@ Component({
         },
         // 获取圈子数据方法
         async getDatas() {
+            let {initList, hasMore, hasLoading, apiInfo, _apiData, _hasMock} = this.data;
             wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
+
+            // hasFirstPageData 是否传入了第一页的list数据，默认false，如果有传入则设置为true
+            let hasFirstPageData = false;
+            if(initList && initList.length > 0){
+                hasFirstPageData = true;
+            }
             // 如果没有更多，则直接返回
             // 判断如果正在加载，则进行节流处理，不请求下一次的接口请求
-            if (!this.data.hasMore || this.data.hasLoading) {
+            if ((!hasFirstPageData && !this.data.hasMore )|| this.data.hasLoading) {
                 return;
             }
 
@@ -198,64 +221,97 @@ Component({
             // if (res.error_num === 0 ) {}
             
             // 请求接口
-            let resp = {};
-
-            // 模拟数据处理-start
-            let testList = [];
-            for(var i=0;i < this.data._apiData.limit;i++){
-                testList.push({
-                    // item数据
-                    height: Math.floor(Math.random()*200) + 100,
-                    num: i,
-                });
-            }
-            resp = {
-                error_num: 0,
-                content: {
-                    list: testList,
-                }
-            }
-            // 模拟数据处理-end
-
-            let { content } = resp;
-            if (resp.error_num === 0 && content) {
-                let list = content.list || [];
-
-                // 当前页数
-                this.data._currentPageNumber = curentP;
-
-                // 数据处理，给每条数据标识上页码
-                list.forEach((item)=>{
-                    item.pageNumber = this.data._currentPageNumber;
-                });
-
-                // 更新请求页码
-                this.data._apiData.offset += this.data._apiData.limit;
-
-                
-                this.setData({
-                    hasMore: true,
-
-                }, async ()=>{
-                    
-                });
-
-                // 将数据存储起来，瀑布流渲染完成后才能存储起来
-                // this.data._bakListData[this.data._currentPageNumber] = {
-                //     list,
-                // }
-
-                // 根据页码获取需要显示的数据
-                // this.getShowData();
-
-                await this.waterfallRender(list);
-
-                this.getShowData();
+            let list = [];
+            if(hasFirstPageData){
+                list = initList;
             } else {
+                // 请求接口前设置loading状态
                 this.setData({
-                    hasMore: false,
+                    hasLoading: true,
                 });
+                // 使用promise模拟接口请求
+                if(_hasMock){
+                    await new Promise((res, rej) => {
+                        setTimeout(()=>{
+                            this.setData({
+                                hasLoading: false,
+                            });
+                            res();
+                        }, 200)
+                    });
+                    let testList = [];
+                    for(var i=0;i < _apiData.limit;i++){
+                        testList.push({
+                            // item数据
+                            height: Math.floor(Math.random()*200) + 100,
+                            num: i,
+                        });
+                    }
+                    list = testList;
+                }else{
+                    
+                    let resp = await app.$fetch({
+                        url: apiInfo.url,
+                        data: {
+                            ...apiInfo.apiData,
+                            pageParameter: JSON.stringify(_apiData)
+                        },
+                        // showLoading: true,
+                    });
+                    wx.getStorageSync('debug') && console.log('component----', '加载数据-end')
+                    this.setData({
+                        hasLoading: false,
+                    });
+
+                    let { content } = resp;
+                    if (resp.error_num === 0 && content) {
+                        list = content.list;
+                        this.setData({
+                            hasMore: content.hasMore,
+                        }, async ()=>{
+                            
+                        });
+                    }else{
+                        // 错误提示
+                        this.setData({
+                            hasMore: false,
+                        });
+                    }
+                }
+                
             }
+
+            // 当前页数
+            this.data._currentPageNumber = curentP;
+
+            // 数据处理，给每条数据标识上页码
+            list.forEach((item)=>{
+                item.pageNumber = this.data._currentPageNumber;
+            });
+
+            // 更新请求页码
+            this.data._apiData.offset += this.data._apiData.limit;
+
+            
+            this.setData({
+                hasMore: true,
+
+            }, async ()=>{
+                
+            });
+
+            // 将数据存储起来，瀑布流渲染完成后才能存储起来
+            // this.data._bakListData[this.data._currentPageNumber] = {
+            //     list,
+            // }
+
+            // 根据页码获取需要显示的数据
+            // this.getShowData();
+
+            await this.waterfallRender(list);
+
+            this.getShowData();
+
         },
         // 瀑布流渲染
         waterfallRender(list){

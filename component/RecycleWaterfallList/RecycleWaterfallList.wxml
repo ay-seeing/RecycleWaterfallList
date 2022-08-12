@@ -1,4 +1,4 @@
-<view class="RecycleList">
+<view class="RecycleList recycle-box-class">
   <view class="scroll-before">
     无限滚动组件内部，列表上面的元素
     <slot name="scroll-outer-before"></slot>
@@ -9,7 +9,7 @@
     </view><!-- 无限滚动内容内部的元素高度需要单独计算 -->
     <view class="fall-warper">
       <view class="fall-list" id="{{recycleListContentId}}-fallLeft">
-        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{leftFallData}}" wx:key="index" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};">
+        <view class="item-page recycle-list-class item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{leftFallData}}" wx:key="index" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};">
         <block wx:if="{{item}}">
           <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
             <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
@@ -18,9 +18,9 @@
       </view>
       </view>
       <view class="fall-list" id="{{recycleListContentId}}-fallRight">
-        <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{rightFallData}}" wx:key="index" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};">
+        <view class="item-page recycle-list-class item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{rightFallData}}" wx:key="index" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};">
           <block wx:if="{{item}}">
-            <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
+            <view class="recycleList-item recycle-item-class" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
                 <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
             </view>
           </block>
@@ -29,16 +29,20 @@
     </view>
   </view>
   <view class="scroll-after">
-    <slot name="scroll-outer-after" wx:if="{{leftFallData.length}}">加载中...</slot>
+    <slot name="scroll-outer-after"></slot>
+    <view class="loadding" wx:if="{{leftFallData.length}}">{{hasMore ? '加载中...' : '没有更多'}}</view>
   </view>
 
   <!-- 插入瀑布流渲染的dom，主要用于计算高度，不在页面可视区域内渲染 -->
-  <view class="invisible-list" id="{{recycleListContentId}}-render">
-    <view class="invisible-item invisible-item-{{index}}" wx:for="{{invisibleList}}" wx:key="index">
-      <view class="item">
-        <ItemProd item="{{({...item, curentP: scrollPageNumber })}}"></ItemProd>
+  <view class="invisible-list fall-warper" id="{{recycleListContentId}}-render">
+    <view class="fall-list recycleList-content-fallLeft">
+      <view class="invisible-item" wx:for="{{invisibleList}}" wx:key="index">
+        <view class="recycleList-item recycle-item-class invisible-item-{{index}}">
+          <ItemProd item="{{({...item, curentP: scrollPageNumber })}}"></ItemProd>
+        </view>
       </view>
     </view>
+    <view class="fall-list recycleList-content-fallRight"></view>
   </view>
   
 </view>

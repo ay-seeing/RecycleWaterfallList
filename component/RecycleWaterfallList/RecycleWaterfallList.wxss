@@ -28,32 +28,35 @@
   align-items: flex-start;
   justify-content: space-between;
 }
-.fall-warper .fall-list{
+.RecycleList .fall-list{
   padding-left:20rpx;
   padding-top:1rpx;
   width:50%;
   flex:1;
 }
-.fall-warper .fall-list:first-child{
+.RecycleList .fall-list:first-child{
   padding-left:0;
 }
-.item{
+.recycleList-item{
   /* width:40%;
   margin-left:10%; */
   padding-top:20rpx;
 }
 .invisible-list{
   position:absolute;
-  left:-900rpx;
+  left:-110%;
   top:0;
-  width:800rpx;
+  width:100%;
 }
-.invisible-item{
-  float:left;
-}
+
 .invisible-list .ItemProd{
   background:#ccc;
 }
-.invisible-list .item{
+.invisible-list .recycleList-item{
   border-color:#000;
+}
+
+.scroll-after .loadding{
+  padding:20rpx 0;
+  text-align:center;
 }
