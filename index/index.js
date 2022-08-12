@@ -95,6 +95,12 @@ Page({
     })
   },
 
+  handleReset(){
+    // 这个方法只是测试组件重置，可以不需要
+    let myRecycle = this.selectComponent('#my_recycle');
+    myRecycle.init();
+  },
+
   // handlTest(){
     // console.log(this.apiData)
     // console.log(99)

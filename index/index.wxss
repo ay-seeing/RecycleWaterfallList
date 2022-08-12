@@ -14,3 +14,14 @@
 .invisible-list .ItemProd{
   background:#ccc;
 }
+
+
+
+.reseat{
+  position:fixed;
+  right:50rpx;
+  bottom:50rpx;
+  background:blue;
+  color:#fff;
+  padding:20rpx 10rpx;
+}

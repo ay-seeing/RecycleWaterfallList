@@ -43,27 +43,19 @@
   padding-left:0;
 }
 .item{
-  /* width:40%;
-  margin-left:10%; */
-
   /* 每个元素间的间距使用pading不要使用margin，不然不好计算 */
   padding-top:20rpx;
 }
 .invisible-list{
   position:absolute;
-  left:-900rpx;
+  left:-110%;
   top:0;
-  width:800rpx;
-}
-.invisible-item{
-  float:left;
+  width:100%;
 }
 .invisible-list .ItemProd{
   background:#ccc;
 }
-.invisible-list .item{
-  border-color:#000;
-}
+
 .recycle-loadding{
   text-align:center;
   padding:10rpx 0;

@@ -1,4 +1,4 @@
-<view class="RecycleList">
+<view class="RecycleList recycle-box-class">
   <view class="scroll-before">
     无限滚动组件内部，列表上面的元素
     <slot name="scroll-outer-before"></slot>
@@ -10,9 +10,9 @@
     <view class="fall-warper fall-warper-{{columnNumber}}">
       <view class="fall-list" id="{{recycleListContentId}}-{{index}}" wx:for="{{columnNumber}}" wx:for-item="{{columnItem}}" wx:key="index" data-c="{{index}}">
         <block wx:if="{{listData[index]}}">
-          <view class="item-page item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{listData[index]}}" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};" wx:key="pageI">
+          <view class="item-page recycle-list-class item-page-{{pageI}}" data-index="{{pageI}}" wx:for="{{listData[index]}}" wx:for-index="pageI" style="height: {{((item && item.height) ? (item.height + 'px') : 'auto')}};" wx:key="pageI">
             <block wx:if="{{item}}">
-              <view class="item recycleList-item" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
+              <view class="item recycleList-item recycle-item-class" wx:for="{{item.list}}" wx:key="index" wx:for-index="si">
                 <ItemProd item="{{({...item, index: si, curentP: scrollPageNumber })}}" data-ii="{{scrollPageNumber}}"></ItemProd>
               </view>
             </block>
@@ -29,10 +29,14 @@
   </view>
 
   <!-- 插入瀑布流渲染的dom，主要用于计算高度，不在页面可视区域内渲染 -->
-  <view class="invisible-list" id="{{recycleListContentId}}-render">
-    <view class="invisible-item invisible-item-{{index}}" wx:for="{{invisibleList}}" wx:key="index">
-      <view class="item">
-        <ItemProd item="{{({...item, curentP: scrollPageNumber })}}"></ItemProd>
+  <view class="invisible-list fall-warper fall-warper-{{columnNumber}}" id="{{recycleListContentId}}-render">
+    <view class="fall-list" wx:for="{{columnNumber}}" wx:key="num" wx:for-index="num">
+      <view class="item-page  recycle-list-class">
+        <view class="invisible-item recycleList-item  recycle-box-class" wx:for="{{invisibleList}}" wx:key="index" wx:if="{{num === 0}}">
+          <view class="item">
+            <ItemProd item="{{({...item, curentP: scrollPageNumber })}}"></ItemProd>
+          </view>
+        </view>
       </view>
     </view>
   </view>
