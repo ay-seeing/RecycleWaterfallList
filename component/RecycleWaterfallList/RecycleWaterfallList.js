@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-13 10:20:07
+ * @LastEditTime: 2022-08-13 10:48:54
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -94,8 +94,8 @@ Component({
                 fail: ()=>{}
             });
         
-            // 获取数据
-            this.getDatas();
+            // 获取数据,监听传入参数的时候已经调用了，所以这里不需要再调用了
+            // this.getDatas();
         }
     },
     data: {
@@ -117,7 +117,7 @@ Component({
 
 
         // -------------------以下为纯数据字段----------------------
-
+        _hasUsedFirstInitData: false,  // 第一次传入的数据是否已经使用过
         _bakScrollPageNumber: 0,   // 上一次的页码，主要是用来对比页码是否改变更换数据
         _bakListData: [],  // 数据备份
         // _bakListData 数据格式
@@ -175,6 +175,7 @@ Component({
                 offset: 0,
             } || { "limit": 30, "offset": 0 },
             this.data._hasWaterfallRenderEnd = true,   // 瀑布流是否渲染结束
+            this.data._hasUsedFirstInitData = false,   // 传入的初始化数据标识为未使用
 
             // 以下是需要渲染的数据
             this.setData({
@@ -191,8 +192,8 @@ Component({
         },
         // 获取圈子数据方法
         async getDatas() {
-            let {initList, hasMore, hasLoading, apiInfo, _apiData, _hasMock, _hasWaterfallRenderEnd} = this.data;
-            wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
+            let {initList, hasMore, hasLoading, apiInfo, _apiData, _hasMock, _hasWaterfallRenderEnd, _hasUsedFirstInitData} = this.data;
+            // wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
 
             // hasFirstPageData 是否传入了第一页的list数据，默认false，如果有传入则设置为true
             let hasFirstPageData = false;
@@ -219,8 +220,9 @@ Component({
 
             // 请求接口
             let list = [];
-            if(hasFirstPageData){
+            if(hasFirstPageData && !_hasUsedFirstInitData){
                 list = initList;
+                this.data._hasUsedFirstInitData = true;
             } else {
                 // 请求接口前设置loading状态
                 this.setData({
@@ -288,7 +290,6 @@ Component({
 
             // 更新请求页码
             this.data._apiData.offset += this.data._apiData.limit;
-
             
             this.setData({
                 hasMore: true,
@@ -438,7 +439,7 @@ Component({
                 listData[c]=[];
             }
 
-            // 轮训，将对应的数据高度和初始化list放到对应的分列的对应页码上，目的是将不需要渲染的页码数据设置高度，让其占据对应的高度
+            // 轮询，将对应的数据高度和初始化list放到对应的分列的对应页码上，目的是将不需要渲染的页码数据设置高度，让其占据对应的高度
             this.data._bakListData.forEach((item, i)=>{
                 let column=0
                 for(column; column < this.data.columnNumber;column++){
