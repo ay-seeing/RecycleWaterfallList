@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-15 15:41:16
+ * @LastEditTime: 2022-08-15 15:43:41
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -154,11 +154,11 @@ Component({
                 this.init();
             })
         },
-        'initHasMore': function(newVal){
-            this.setData({
-                hasMore: newVal,
-            });
-        },
+        // 'initHasMore': function(newVal){
+        //     this.setData({
+        //         hasMore: newVal,
+        //     });
+        // },
     },
     /**
      * 组件的方法列表
@@ -224,6 +224,9 @@ Component({
             if(hasFirstPageData && !_hasUsedFirstInitData){
                 list = initList;
                 this.data._hasUsedFirstInitData = true;
+                this.setData({
+                    hasMore: this.data.initHasMore,
+                });
             } else {
                 // 请求接口前设置loading状态
                 this.setData({
