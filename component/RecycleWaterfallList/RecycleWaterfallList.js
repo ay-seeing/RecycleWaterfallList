@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-15 15:47:39
+ * @LastEditTime: 2022-08-15 15:49:49
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -117,7 +117,6 @@ Component({
         _hasWaterfallRenderEnd: true,   // 瀑布流是否渲染结束
 
         _hasMock: true,  // 是否mock，开发时这里个字段要改成false
-        _hasMoreMark: true,   // 接口请求完成后，设置 hasMore之前存存接口返回的 hasMore字段，等到需要渲染的数据渲染后再设置 hasMore字段，解决最后一页先看到没有更多文案，后渲染数据的显示问题
     },
     observers: {  // 数据变化监听
         'apiInfo': function(opt){
@@ -221,7 +220,7 @@ Component({
                 list = initList;
                 this.data._hasUsedFirstInitData = true;
                 this.setData({
-                    hasMore: this.data._hasMoreMark,
+                    hasMore: this.data.initHasMore,
                 });
             } else {
                 // 请求接口前设置loading状态
