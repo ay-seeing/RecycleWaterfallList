@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-13 11:20:28
+ * @LastEditTime: 2022-08-15 15:47:39
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -117,6 +117,7 @@ Component({
         _hasWaterfallRenderEnd: true,   // 瀑布流是否渲染结束
 
         _hasMock: true,  // 是否mock，开发时这里个字段要改成false
+        _hasMoreMark: true,   // 接口请求完成后，设置 hasMore之前存存接口返回的 hasMore字段，等到需要渲染的数据渲染后再设置 hasMore字段，解决最后一页先看到没有更多文案，后渲染数据的显示问题
     },
     observers: {  // 数据变化监听
         'apiInfo': function(opt){
@@ -130,11 +131,11 @@ Component({
                 this.init();
             })
         },
-        'initHasMore': function(newVal){
-            this.setData({
-                hasMore: newVal,
-            });
-        },
+        // 'initHasMore': function(newVal){
+        //     this.setData({
+        //         hasMore: newVal,
+        //     });
+        // },
     },
     /**
      * 组件的方法列表
@@ -219,6 +220,9 @@ Component({
             if(hasFirstPageData && !_hasUsedFirstInitData){
                 list = initList;
                 this.data._hasUsedFirstInitData = true;
+                this.setData({
+                    hasMore: this.data._hasMoreMark,
+                });
             } else {
                 // 请求接口前设置loading状态
                 this.setData({
@@ -287,12 +291,11 @@ Component({
             // 更新请求页码
             this.data._apiData.offset += this.data._apiData.limit;
             
-            this.setData({
-                hasMore: true,
-
-            }, async ()=>{
+            // this.setData({
+            //     hasMore: true,
+            // }, async ()=>{
                 
-            });
+            // });
 
             // 将数据存储起来，瀑布流渲染完成后才能存储起来
             // this.data._bakListData[this.data._currentPageNumber] = {
