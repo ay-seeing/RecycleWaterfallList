@@ -1,7 +1,7 @@
 <view class="page-detail">
   <view class="page_before">组件外面元素</view>
   
-  <RecycleWaterfallList id="my_recycle" generic:ItemProd="ItemProd" columnNumber="{{3}}" recycleListContentId="recycleList-content" apiInfo="{{apiInfo}}">
+  <RecycleWaterfallList id="my_recycle" generic:ItemProd="ItemProd" columnNumber="{{3}}" recycleListContentId="recycleList-content" apiInfo="{{apiInfo}}" bind:noMoreCallback="noMoreFn">
     <view slot="scroll-outer-before" class="">11111</view>
     <view slot="scroll-outer-after" class=""></view>
   </RecycleWaterfallList>
