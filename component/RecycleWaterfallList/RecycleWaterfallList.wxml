@@ -23,8 +23,12 @@
   </view>
   <view class="scroll-after">
     <slot name="scroll-outer-after"></slot>
-    <view class="recycle-loadding" wx:if="{{listData.length}}">
-      {{hasMore ? '加载中...' : '没有更多'}}
+    <view class="loadding recycle-loadding-class" wx:if="{{!hasShowCenterLoading || listData.length}}">
+      <view wx:if="{{hasMore}}">
+        <image src="https://asset.yit.com/xcx/icon/house/loading_124.gif" style="width: 16px;height:16px;vertical-align:middle;" />
+        加载中...
+      </view>
+      <view wx:else>没有更多</view>
     </view>
   </view>
 

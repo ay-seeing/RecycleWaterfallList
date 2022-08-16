@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-16 10:24:41
+ * @LastEditTime: 2022-08-16 14:56:50
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -54,7 +54,7 @@ Component({
       pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
       styleIsolation: 'apply-shared',
     },
-    externalClasses: ['recycle-box-class', 'recycle-list-class', 'recycle-item-class'],  // 将父级的样式传给子组件使用
+    externalClasses: ['recycle-box-class', 'recycle-list-class', 'recycle-item-class', 'recycle-loadding-class'],  // 将父级的样式传给子组件使用
     properties: {
         initList: {// 父组件传入初始化list
             type: Array,
@@ -71,6 +71,10 @@ Component({
                 apiData: { }, // 除翻页外的其他接口参数，但不包含 offset 和 limit
                 count: 30,  // 每页几个
             }
+        },
+        hasShowCenterLoading: {// 是否显示页面中间的大loading，如果不显示，则显示list里面的小loading，大loading需要自己在接口请求的时候自己实现
+            type: Boolean,
+            value: true,
         },
         columnNumber: { // 几列，默认2列
             type: Number,
@@ -102,8 +106,8 @@ Component({
                 fail: ()=>{}
             });
         
-            // 获取数据,监听传入参数的时候已经调用了，所以这里不需要再调用了
-            // this.getDatas();
+            // 获取数据
+            this.getDatas();
         }
     },
     data: {
@@ -152,7 +156,7 @@ Component({
         _hasMoreMark: true,   // 接口请求完成后，设置 hasMore之前存存接口返回的 hasMore字段，等到需要渲染的数据渲染后再设置 hasMore字段，解决最后一页先看到没有更多文案，后渲染数据的显示问题
     },
     observers: {  // 数据变化监听
-        'apiInfo': function(opt){
+        'apiInfo': function(opt, oldOpt){
             // console.log('this.data._apiData--', opt)
             this.setData({
                 _apiData: {
@@ -160,7 +164,10 @@ Component({
                     limit: opt.count,
                 },
             }, ()=>{
-                this.init();
+                // 为了初始化更快，初始化的时候在组件生命周期里面直接调用获取数据方法，只有当真正修改的接口请求参数的时候，才执行init
+                if(opt && oldOpt){
+                    this.init();
+                }
             })
         },
         // 'initHasMore': function(newVal){
@@ -201,7 +208,7 @@ Component({
         },
         // 获取圈子数据方法
         async getDatas() {
-            let {initList, hasMore, hasLoading, apiInfo, _apiData, _hasMock, _hasWaterfallRenderEnd, _hasUsedFirstInitData, dataKey, moreKey, listData, initHasMore} = this.data;
+            let {initList, hasMore, hasLoading, apiInfo, _apiData, _hasMock, _hasWaterfallRenderEnd, _hasUsedFirstInitData, dataKey, moreKey, listData, initHasMore, hasShowCenterLoading} = this.data;
             // wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
 
             // hasFirstPageData 是否传入了第一页的list数据，默认false，如果有传入则设置为true
@@ -274,7 +281,7 @@ Component({
                             ...apiInfo.apiData,
                             pageParameter: JSON.stringify(_apiData)
                         },
-                        showLoading: !hasFirstPageData && listData.length === 0,
+                        showLoading: hasShowCenterLoading && !hasFirstPageData && listData.length === 0,
                     });
                     wx.getStorageSync('debug') && console.log('component----', '加载数据-end')
                     this.setData({
