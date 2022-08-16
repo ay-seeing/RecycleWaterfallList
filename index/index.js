@@ -101,6 +101,10 @@ Page({
     myRecycle.init();
   },
 
+  noMoreFn(){
+    console.log('没有更多了');
+  },
+
   // handlTest(){
     // console.log(this.apiData)
     // console.log(99)
