@@ -56,7 +56,7 @@
   background:#ccc;
 }
 
-.recycle-loadding{
-  text-align:center;
-  padding:10rpx 0;
+.scroll-after .loadding{
+  padding: 10rpx 0;
+  text-align: center;
 }

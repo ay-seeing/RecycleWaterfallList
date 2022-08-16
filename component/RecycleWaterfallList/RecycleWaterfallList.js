@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-16 14:56:50
+ * @LastEditTime: 2022-08-16 17:15:52
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -39,13 +39,33 @@ js： 在父组件的 onPageScroll 和 onReachBottom 事件里面分别调用组
 
 
 自定义无限滚动id：
-<RecycleWaterfallList id="my_recycle" recycleListContentId="id1"></RecycleWaterfallList>
+<RecycleWaterfallList id="my_recycle" generic:ItemProd="NftItem" class="result-list" columnNumber="{{3}}" recycleListContentId="recycleList-content2" hasContour="{{false}}" apiInfo="{{pledgeApiInfo}}" dataKey="nftList" initHasMore="{{hasMore}}" initList="{{nftList}}" chooseCardList="{{chooseCardList}}" recycle-item-class="recycleItem"  bind:noMoreCallback="noMoreFn"></RecycleWaterfallList>
+
 
 参数说明：
 apiInfo    必填, api请求的一些参数，因为接口的 url 是必填
+  apiInfo字段示例：
+    pledgeApiInfo: {
+        url: 'node_nft.getUserNftPlayCollectList',
+        apiData: {
+            sortType: 'DEFAULT',
+            sortAsc: true,
+            nftFilterValues: [],
+        },
+        count: 90,
+    },
 id    必填，组件的id，用于父组件调用组件内部方法
-recycleListContentId   选填，组件内交互id，随意填写
-columnNumber    选填，瀑布流的列数，默认2，目前组件css样式支持2-4列，大于4列需要自己写css样式
+generic:ItemProd    必填，渲染的子组件
+hasShowCenterLoading   选填，是否显示接口请求的loading，需要自行开发，默认：显示
+columnNumber    选填，瀑布流的列数，目前组件css样式支持2-4列，大于4列需要自己写css样式，默认: 2
+recycleListContentId   选填，组件内交互id，随意填写，默认： recycleList-content
+dataKey   选填，接口获取list数据字段名称，默认： list ，可以使用.的方式获取，最多传入2层，如：  info.products
+moreKey    选填，接口返回是否有更多字段，默认：hasMore
+initList   选填，是否需要传入默认的list数据，默认： []
+initHasMore   选填，配合 initList 使用，这传入默认数据后，是否还有更多数据，默认：true
+chooseCardList   选填，业务逻辑需要，比如质押页面选择质押藏品浮层里面是否选中某个藏品，默认：无
+recycle-box-class/recycle-list-class/recycle-item-class/recycle-loadding-class   选填，默认：无
+bind:noMoreCallback  选填，没有更多回调函数，默认：无
 
 */
 Component({
@@ -192,6 +212,7 @@ Component({
             } || { "limit": 30, "offset": 0 };
             this.data._hasWaterfallRenderEnd = true;   // 瀑布流是否渲染结束
             this.data._hasUsedFirstInitData = false;   // 传入的初始化数据标识为未使用
+            this.data._hasMoreMark = true;
 
             // 以下是需要渲染的数据
             this.setData({
@@ -242,9 +263,10 @@ Component({
                 this.data._hasUsedFirstInitData = true;
 
                 this.data._hasMoreMark = initHasMore;
-                // this.setData({
-                //     hasMore: initHasMore,
-                // });
+                // 没有更多回调
+                if(!this.data._hasMoreMark){
+                    this.noMoreFn();
+                }
             } else {
                 // 请求接口前设置loading状态
                 this.setData({
@@ -270,8 +292,12 @@ Component({
                     }
                     list = testList;
 
-                    if(curentP >= Math.ceil(Math.random()*10 + 10)){
+                    if(curentP >= Math.ceil(Math.random()*10 + 2)){
                         this.data._hasMoreMark = false;
+                    }
+                    // 没有更多回调
+                    if(!this.data._hasMoreMark){
+                        this.noMoreFn();
                     }
                 }else{
                     
@@ -302,11 +328,10 @@ Component({
 
                         // 标记是否还有更多，这渲染完数据后渲染是否有更多
                         this.data._hasMoreMark = listMore;
-                        // this.setData({
-                        //     hasMore: listMore,
-                        // }, async ()=>{
-                            
-                        // });
+                        // 没有更多回调
+                        if(!this.data._hasMoreMark){
+                            this.noMoreFn();
+                        }
                     }else{
                         // 错误提示
                         this.setData({
@@ -610,6 +635,12 @@ Component({
             // }, ()=>{
             //     // this.getScrollBeforeHeight();
             // });
+        },
+
+        // 没有更多数据时触发
+        noMoreFn(){
+            // 触发父级的没有更多回调函数
+            this.triggerEvent('noMoreCallback');
         },
     }
   });
