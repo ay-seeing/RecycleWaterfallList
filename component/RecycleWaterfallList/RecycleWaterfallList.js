@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-16 17:15:52
+ * @LastEditTime: 2022-08-17 15:38:09
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -90,6 +90,19 @@ Component({
                 url: '',
                 apiData: { }, // 除翻页外的其他接口参数，但不包含 offset 和 limit
                 count: 30,  // 每页几个
+            },
+            observer: function(opt, oldOpt){
+                this.setData({
+                    _apiData: {
+                        ...this.data._apiData,
+                        limit: opt.count,
+                    },
+                }, ()=>{
+                    // 为了初始化更快，初始化的时候在组件生命周期里面直接调用获取数据方法，只有当真正修改的接口请求参数的时候，才执行init
+                    if(opt && oldOpt && oldOpt.url){
+                        this.init();
+                    }
+                })
             }
         },
         hasShowCenterLoading: {// 是否显示页面中间的大loading，如果不显示，则显示list里面的小loading，大loading需要自己在接口请求的时候自己实现
@@ -176,20 +189,6 @@ Component({
         _hasMoreMark: true,   // 接口请求完成后，设置 hasMore之前存存接口返回的 hasMore字段，等到需要渲染的数据渲染后再设置 hasMore字段，解决最后一页先看到没有更多文案，后渲染数据的显示问题
     },
     observers: {  // 数据变化监听
-        'apiInfo': function(opt, oldOpt){
-            // console.log('this.data._apiData--', opt)
-            this.setData({
-                _apiData: {
-                    ...this.data._apiData,
-                    limit: opt.count,
-                },
-            }, ()=>{
-                // 为了初始化更快，初始化的时候在组件生命周期里面直接调用获取数据方法，只有当真正修改的接口请求参数的时候，才执行init
-                if(opt && oldOpt){
-                    this.init();
-                }
-            })
-        },
         // 'initHasMore': function(newVal){
         //     this.setData({
         //         hasMore: newVal,
