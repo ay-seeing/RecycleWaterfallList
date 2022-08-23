@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-17 15:38:09
+ * @LastEditTime: 2022-08-23 16:05:34
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -96,8 +96,44 @@ Component({
                         limit: opt.count,
                     },
                 }, ()=>{
+                    function hasSame(obj1, obj2){
+                        // 判断两个对象是否存在，如果不存在则返回false
+                        if(obj1 && obj2){
+                            // 判断两个对象是否是同一个对象，如果是则返回true
+                            if(obj1 === obj2){
+                                return true;
+                            }
+                            // 判断两个对象键值数组长度是否一致，不一致返回 false
+                            let obj1Props = Object.getOwnPropertyNames(obj1);
+                            let obj2Props = Object.getOwnPropertyNames(obj2);
+                            if(obj1Props.length !== obj2Props.length){
+                                return false;
+                            }
+
+                            // 遍历对象的键值
+                            for (let prop in obj1){
+                                // 判断 obj1 的键值，在 obj2 中是否存在，不存在，返回 false
+                                if(obj2.hasOwnProperty(prop)){
+                                    // 判断 obj1 的键值是否为对象，是则递归，不是对象直接判断键值是否相等，不相等返回 false
+                                    if (typeof obj1[prop] === 'object') {
+                                        if (!hasSame(obj1[prop], obj2[prop])){
+                                            return false
+                                        }
+                                    } else if (obj1[prop] !== obj2[prop]) {
+                                        return false
+                                    }
+                                }else{
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+
                     // 为了初始化更快，初始化的时候在组件生命周期里面直接调用获取数据方法，只有当真正修改的接口请求参数的时候，才执行init
-                    if(opt && oldOpt && oldOpt.url){
+                    if(!hasSame(opt, oldOpt) && oldOpt && oldOpt.url){
                         this.init();
                     }
                 })
