@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-23 16:05:34
+ * @LastEditTime: 2022-08-31 14:34:21
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -418,64 +418,66 @@ Component({
                 this.setData({
                     invisibleList: list,
                 }, ()=>{
-                    let waterFallInvisible = '#' + this.data.recycleListContentId + '-render';
-                
-                    let query = self.createSelectorQuery();
-                    // console.log(this.data.recycleListContentId + '-fallLeft')
-                    query.select('#' + this.data.recycleListContentId + '-fallLeft').boundingClientRect();
-                    query.select('#' + this.data.recycleListContentId + '-fallRight').boundingClientRect();
-                    query.selectAll(`${waterFallInvisible} .invisible-item`).boundingClientRect();
-                    query.exec((res) => {
-                        // console.log('res---1----', res, res[2])
-                        if(res){
-                            let leftH = res[0].height;
-                            let rightH = res[1].height;
-                            let arrayListH = res[2];
+                    await setTimeout(async ()=>{  // 这里需要做个延迟，不然获取的高度可能会因未渲染完成而获取到错误的高度
+                        let waterFallInvisible = '#' + this.data.recycleListContentId + '-render';
+                    
+                        let query = self.createSelectorQuery();
+                        // console.log(this.data.recycleListContentId + '-fallLeft')
+                        query.select('#' + this.data.recycleListContentId + '-fallLeft').boundingClientRect();
+                        query.select('#' + this.data.recycleListContentId + '-fallRight').boundingClientRect();
+                        query.selectAll(`${waterFallInvisible} .invisible-item`).boundingClientRect();
+                        query.exec((res) => {
+                            // console.log('res---1----', res, res[2])
+                            if(res){
+                                let leftH = res[0].height;
+                                let rightH = res[1].height;
+                                let arrayListH = res[2];
 
-                            // 当前页左右相对于的元素总高度
-                            let currentPagetLeftH = 0;
-                            let currentPagetRightH = 0;
+                                // 当前页左右相对于的元素总高度
+                                let currentPagetLeftH = 0;
+                                let currentPagetRightH = 0;
 
-                            // arrayListH.forEach((item)=>{});
-                            let leftFallD = {};
-                            let rightFallD = {};
-                            for(var i=0;i<arrayListH.length;i++){
-                                // console.log('i', arrayListH[i])
-                                let item = list[i];
-                                // 对比左右列表高度
-                                if(leftH + currentPagetLeftH <= rightH + currentPagetRightH){
-                                    currentPagetLeftH += arrayListH[i].height;
-                                    // 判断左边列表当前页码是否存在列表，如果不存在则初始化一个
-                                    if(!leftFallD.list){
-                                        leftFallD.list = [];
+                                // arrayListH.forEach((item)=>{});
+                                let leftFallD = {};
+                                let rightFallD = {};
+                                for(var i=0;i<arrayListH.length;i++){
+                                    // console.log('i', arrayListH[i])
+                                    let item = list[i];
+                                    // 对比左右列表高度
+                                    if(leftH + currentPagetLeftH <= rightH + currentPagetRightH){
+                                        currentPagetLeftH += arrayListH[i].height;
+                                        // 判断左边列表当前页码是否存在列表，如果不存在则初始化一个
+                                        if(!leftFallD.list){
+                                            leftFallD.list = [];
+                                        }
+                                        leftFallD.height = currentPagetLeftH;
+                                        leftFallD.list.push(item);
+
+                                    }else{
+                                        currentPagetRightH += arrayListH[i].height;
+                                        // 判断左边列表当前页码是否存在列表，如果不存在则初始化一个
+                                        if(!rightFallD.list){
+                                            rightFallD.list = [];
+                                        }
+                                        rightFallD.height = currentPagetRightH;
+                                        rightFallD.list.push(item);
                                     }
-                                    leftFallD.height = currentPagetLeftH;
-                                    leftFallD.list.push(item);
-
-                                }else{
-                                    currentPagetRightH += arrayListH[i].height;
-                                    // 判断左边列表当前页码是否存在列表，如果不存在则初始化一个
-                                    if(!rightFallD.list){
-                                        rightFallD.list = [];
-                                    }
-                                    rightFallD.height = currentPagetRightH;
-                                    rightFallD.list.push(item);
                                 }
+                                if(!this.data._bakListData[this.data._currentPageNumber]){
+                                    this.data._bakListData[this.data._currentPageNumber] = {}
+                                }
+
+                                this.data._bakListData[this.data._currentPageNumber].left = leftFallD;
+                                this.data._bakListData[this.data._currentPageNumber].right = rightFallD;
+
+                                // console.log(211111, leftFallD)
+                                // 标注瀑布流渲染结束
+                                this.data._hasWaterfallRenderEnd = true;
+
+                                resolve();
                             }
-                            if(!this.data._bakListData[this.data._currentPageNumber]){
-                                this.data._bakListData[this.data._currentPageNumber] = {}
-                            }
-
-                            this.data._bakListData[this.data._currentPageNumber].left = leftFallD;
-                            this.data._bakListData[this.data._currentPageNumber].right = rightFallD;
-
-                            // console.log(211111, leftFallD)
-                            // 标注瀑布流渲染结束
-                            this.data._hasWaterfallRenderEnd = true;
-
-                            resolve();
-                        }
-                    })
+                        });
+                    }, 50);
                 });
             });
         },
