@@ -2,7 +2,7 @@
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
  * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-08-23 16:05:34
+ * @LastEditTime: 2022-08-31 14:29:46
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -416,84 +416,86 @@ Component({
                 this.setData({
                     invisibleList: list,
                 }, ()=>{
-                    let waterFallInvisible = '#' + this.data.recycleListContentId + '-render';
-                
-                    let query = self.createSelectorQuery();
-                    // console.log(this.data.recycleListContentId + '-fallLeft')
+                    setTimeout(()=>{  // 这里需要做个延迟，不然获取的高度可能会因未渲染完成而获取到错误的高度
+                        let waterFallInvisible = '#' + this.data.recycleListContentId + '-render';
+                    
+                        let query = self.createSelectorQuery();
+                        // console.log(this.data.recycleListContentId + '-fallLeft')
 
-                    // 循环获取每列的高度
-                    let column=0
-                    for(column; column < this.data.columnNumber;column++){
-                        query.select('#' + this.data.recycleListContentId + '-' + column).boundingClientRect();
-                    }
-
-                    query.selectAll(`${waterFallInvisible} .invisible-item`).boundingClientRect();
-                    query.exec((res) => {
-                        // console.log('res---1----', res, res[2])
-                        if(res){
-                            let listH = [];  // 每列的高度
-                            let currentPagetH = [];  // 当前页所有列里面的元素总高度
-                            let currentListData = {};   // 每列的数据
-
-                            // 渲染时，重置当前页的高度
-                            let column2 = 0;
-                            for(column2; column2 < self.data.columnNumber;column2++){
-                                if(!res[column2]){
-                                    console.log('dom不存在，需要排查问题');
-                                }
-                                listH[column2] = res[column2].height;
-                                currentPagetH[column2] = 0;
-                                currentListData[column2] = {};
-                            }
-
-                            // 所有单个元素的列表
-                            let arrayListH = res[self.data.columnNumber];
-
-                            // 训话当前页码所有的单元元素列表，根据高度计算出每个item应该放在哪一行
-                            let i=0
-                            for(i;i<arrayListH.length;i++){
-                                // console.log('i', arrayListH[i])
-                                let item = list[i];
-
-                                let targetColumn = 0;  // 标识哪列最矮
-
-                                // 高度对比
-                                let columnDiffH = [];
-                                listH.forEach((item, i)=>{
-                                    columnDiffH[i] = item + currentPagetH[i];
-                                    // console.log()
-                                });
-                                targetColumn = self.getArrayMin(columnDiffH);
-
-                                currentPagetH[targetColumn] += arrayListH[i].height;
-
-                                // console.log('---targetColumn---', i, targetColumn)
-
-                                // 插入数据
-                                let l = 0;
-                                for(l; l<self.data.columnNumber;l++){
-                                    // 判断当前列表当前页码是否存在列表，如果不存在则初始化一个
-                                    if(!currentListData[l].list){
-                                        currentListData[l].list = [];
-                                    }
-                                }
-                                currentListData[targetColumn].height = currentPagetH[targetColumn];
-                                currentListData[targetColumn].list.push(item);
-                                
-                            }
-
-                            // 判断当前页面是否有备份数据，如果没有则添加进去
-                            if(!this.data._bakListData[this.data._currentPageNumber]){
-                                this.data._bakListData[this.data._currentPageNumber] = currentListData;
-                            }
-
-                            // console.log(211111, this.data._bakListData)
-                            // 标注瀑布流渲染结束
-                            this.data._hasWaterfallRenderEnd = true;
-
-                            resolve();
+                        // 循环获取每列的高度
+                        let column=0
+                        for(column; column < this.data.columnNumber;column++){
+                            query.select('#' + this.data.recycleListContentId + '-' + column).boundingClientRect();
                         }
-                    })
+
+                        query.selectAll(`${waterFallInvisible} .invisible-item`).boundingClientRect();
+                        query.exec((res) => {
+                            // console.log('res---1----', res, res[2])
+                            if(res){
+                                let listH = [];  // 每列的高度
+                                let currentPagetH = [];  // 当前页所有列里面的元素总高度
+                                let currentListData = {};   // 每列的数据
+
+                                // 渲染时，重置当前页的高度
+                                let column2 = 0;
+                                for(column2; column2 < self.data.columnNumber;column2++){
+                                    if(!res[column2]){
+                                        console.log('dom不存在，需要排查问题');
+                                    }
+                                    listH[column2] = res[column2].height;
+                                    currentPagetH[column2] = 0;
+                                    currentListData[column2] = {};
+                                }
+
+                                // 所有单个元素的列表
+                                let arrayListH = res[self.data.columnNumber];
+
+                                // 循环当前页码所有的单元元素列表，根据高度计算出每个item应该放在哪一行
+                                let i=0
+                                for(i;i<arrayListH.length;i++){
+                                    // console.log('i', arrayListH[i])
+                                    let item = list[i];
+
+                                    let targetColumn = 0;  // 标识哪列最矮
+
+                                    // 高度对比
+                                    let columnDiffH = [];
+                                    listH.forEach((item, i)=>{
+                                        columnDiffH[i] = item + currentPagetH[i];
+                                        // console.log()
+                                    });
+                                    targetColumn = self.getArrayMin(columnDiffH);
+
+                                    currentPagetH[targetColumn] += arrayListH[i].height;
+
+                                    // console.log('---targetColumn---', i, targetColumn)
+
+                                    // 插入数据
+                                    let l = 0;
+                                    for(l; l<self.data.columnNumber;l++){
+                                        // 判断当前列表当前页码是否存在列表，如果不存在则初始化一个
+                                        if(!currentListData[l].list){
+                                            currentListData[l].list = [];
+                                        }
+                                    }
+                                    currentListData[targetColumn].height = currentPagetH[targetColumn];
+                                    currentListData[targetColumn].list.push(item);
+                                    
+                                }
+
+                                // 判断当前页面是否有备份数据，如果没有则添加进去
+                                if(!this.data._bakListData[this.data._currentPageNumber]){
+                                    this.data._bakListData[this.data._currentPageNumber] = currentListData;
+                                }
+
+                                // console.log(211111, this.data._bakListData)
+                                // 标注瀑布流渲染结束
+                                this.data._hasWaterfallRenderEnd = true;
+
+                                resolve();
+                            }
+                        });
+                    }, 50);
                 });
             });
         },
