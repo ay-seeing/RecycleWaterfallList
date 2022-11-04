@@ -1,8 +1,8 @@
 /*
  * @Author: yiyang 630999015@qq.com
  * @Date: 2022-07-18 10:49:45
- * @LastEditors: yiyang 630999015@qq.com
- * @LastEditTime: 2022-09-20 11:09:42
+ * @LastEditors: yiyang yiyang@yit.com
+ * @LastEditTime: 2022-11-04 17:44:33
  * @FilePath: /WeChatProjects/ComponentLongList/component/RecycleList/RecycleList.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -68,72 +68,72 @@ bind:noMoreCallback  选填，没有更多回调函数，默认：无
 */
 Component({
     options: {
-      multipleSlots: true, // 在组件定义时的选项中启用多slot支持
-      pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
-      styleIsolation: 'apply-shared',
+        multipleSlots: true, // 在组件定义时的选项中启用多slot支持
+        pureDataPattern: /^_/, // 指定所有 _ 开头的数据字段为纯数据字段
+        styleIsolation: 'apply-shared',
     },
     externalClasses: ['recycle-box-class', 'recycle-list-class', 'recycle-item-class', 'recycle-loadding-class'],  // 将父级的样式传给子组件使用
     properties: {
         initList: {// 父组件传入初始化list
             type: Array,
             value: [],
-        }, 
+        },
         initHasMore: {  // 和传入的初始值配合使用，如果传入初始值时也同时没有更多，则组件内不会进行翻页加载了
             type: Boolean,
-            value:true,
+            value: true,
         },
         apiInfo: {   // 必传，api相关信息
             type: Object,
             value: {
                 url: '',
-                apiData: { }, // 除翻页外的其他接口参数，但不包含 offset 和 limit
+                apiData: {}, // 除翻页外的其他接口参数，但不包含 offset 和 limit
                 count: 30,  // 每页几个
             },
-            observer: function(opt, oldOpt){
+            observer: function (opt, oldOpt) {
                 this.setData({
                     _apiData: {
                         ...this.data._apiData,
                         limit: opt.count,
                     },
-                }, ()=>{
-                    function hasSame(obj1, obj2){
+                }, () => {
+                    function hasSame(obj1, obj2) {
                         // 判断两个对象是否存在，如果不存在则返回false
-                        if(obj1 && obj2){
+                        if (obj1 && obj2) {
                             // 判断两个对象是否是同一个对象，如果是则返回true
-                            if(obj1 === obj2){
+                            if (obj1 === obj2) {
                                 return true;
                             }
                             // 判断两个对象键值数组长度是否一致，不一致返回 false
                             let obj1Props = Object.getOwnPropertyNames(obj1);
                             let obj2Props = Object.getOwnPropertyNames(obj2);
-                            if(obj1Props.length !== obj2Props.length){
+                            if (obj1Props.length !== obj2Props.length) {
                                 return false;
                             }
 
                             // 遍历对象的键值
-                            for (let prop in obj1){
+                            for (let prop in obj1) {
                                 // 判断 obj1 的键值，在 obj2 中是否存在，不存在，返回 false
-                                if(obj2.hasOwnProperty(prop)){
+                                if (obj2.hasOwnProperty(prop)) {
                                     // 判断 obj1 的键值是否为对象，是则递归，不是对象直接判断键值是否相等，不相等返回 false
                                     if (typeof obj1[prop] === 'object') {
-                                        if (!hasSame(obj1[prop], obj2[prop])){
+                                        if (!hasSame(obj1[prop], obj2[prop])) {
                                             return false
                                         }
                                     } else if (obj1[prop] !== obj2[prop]) {
                                         return false
                                     }
-                                }else{
+                                } else {
                                     return false;
                                 }
                             }
                             return true;
-                        }else{
+                        } else {
                             return false;
                         }
                     }
 
                     // 为了初始化更快，初始化的时候在组件生命周期里面直接调用获取数据方法，只有当真正修改的接口请求参数的时候，才执行init
-                    if(!hasSame(opt, oldOpt) && oldOpt && oldOpt.url){
+                    if (!hasSame(opt, oldOpt) && oldOpt && oldOpt.url) {
                         this.init();
                     }
                 })
@@ -162,17 +162,17 @@ Component({
     },
     lifetimes: {
         // 组件初始化生命周期-组件初始化完成
-        attached: function() {
+        attached: function () {
             const self = this;
             // 获取可视区域高度
             wx.getSystemInfo({
                 success: (res) => {
-                self.data._showHeight = res.windowHeight;
-                // console.log(res.windowHeight)
+                    self.data._showHeight = res.windowHeight;
+                    // console.log(res.windowHeight)
                 },
-                fail: ()=>{}
+                fail: () => { }
             });
-        
+
             // 获取数据
             this.getDatas();
         }
@@ -182,7 +182,7 @@ Component({
         leftFallData: [],   // 瀑布流左边
         rightFallData: [],   // 瀑布流右边
         // listData: [],   // 将数据处理成二维数组
-        scrollPageNumber:0,   // 可视区域的页码
+        scrollPageNumber: 0,   // 可视区域的页码
         hasLoading: false,   // 是否正在获取数据
 
         invisibleList: [], // 不可见list渲染
@@ -191,7 +191,7 @@ Component({
         _hasUsedFirstInitData: false,  // 第一次传入的数据是否已经使用过
         _bakScrollPageNumber: 0,   // 上一次的页码，主要是用来对比页码是否改变更换数据
         _bakListData: [],  // 数据备份,[{left: {height: xxx, list: []}, right: {height: xxx, list: []}}]
-        _currentPageNumber:0,  // 最后一次请求接口的页码
+        _currentPageNumber: 0,  // 最后一次请求接口的页码
         _showHeight: 0, // 可视区域高度
         _diffHeight: 0,  // 无限滚动列表内部，第一个元素前面距离滚动列表顶部距离
         _apiData: { "limit": 30, "offset": 0 },
@@ -211,11 +211,11 @@ Component({
      * 组件的方法列表
      */
     methods: {
-        init(){
+        init() {
             // 以下为纯数据字段
             this.data._bakScrollPageNumber = 0;   // 上一次的页码，主要是用来对比页码是否改变更换数据
             this.data._bakListData = [];  // 数据备份
-            this.data._currentPageNumber =0;  // 最后一次请求接口的页码
+            this.data._currentPageNumber = 0;  // 最后一次请求接口的页码
             this.data._diffHeight = 0;  // 无限滚动列表内部，第一个元素前面距离滚动列表顶部距离
             this.data._apiData = {
                 ...this.data._apiData,
@@ -230,35 +230,35 @@ Component({
                 hasMore: this.data.initHasMore !== undefined ? this.data.initHasMore : true,
                 leftFallData: [],   // 瀑布流左边
                 rightFallData: [],   // 瀑布流右边
-                scrollPageNumber:0,   // 可视区域的页码
+                scrollPageNumber: 0,   // 可视区域的页码
                 hasLoading: false,   // 是否正在获取数据
 
                 invisibleList: [], // 不可见list渲染
-            }, ()=>{
+            }, () => {
                 // 获取数据
                 this.getDatas();
             });
         },
         // 获取圈子数据方法
         async getDatas() {
-            let {initList, hasMore, hasLoading, apiInfo, _apiData, _hasMock, _hasWaterfallRenderEnd, _hasUsedFirstInitData, dataKey, moreKey, listData, initHasMore, hasShowCenterLoading} = this.data;
+            let { initList, hasMore, hasLoading, apiInfo, _apiData, _hasMock, _hasWaterfallRenderEnd, _hasUsedFirstInitData, dataKey, moreKey, listData, initHasMore, hasShowCenterLoading } = this.data;
             // wx.getStorageSync('debug') && console.log('component----', '加载数据-start', this.data.hasMore, this.data.hasLoading, this.data._hasWaterfallRenderEnd)
 
             // hasFirstPageData 是否传入了第一页的list数据，默认false，如果有传入则设置为true
             let hasFirstPageData = false;
-            if(initList && initList.length > 0){
+            if (initList && initList.length > 0) {
                 hasFirstPageData = true;
             }
             // 如果没有更多，则直接返回
             // 判断如果正在加载，则进行节流处理，不请求下一次的接口请求
             // 如果传入值和没有更多，则需要进行一次渲染，不能阻止代码执行
-            if (((!hasFirstPageData || _hasUsedFirstInitData) && !hasMore )|| hasLoading) {
+            if (((!hasFirstPageData || _hasUsedFirstInitData) && !hasMore) || hasLoading) {
                 return;
             }
 
             // 如果还在渲染，则300ms后再执行
-            if(!_hasWaterfallRenderEnd){
-                setTimeout(()=>{
+            if (!_hasWaterfallRenderEnd) {
+                setTimeout(() => {
                     this.getDatas();
                 }, 300);
                 return;
@@ -266,7 +266,7 @@ Component({
 
             wx.getStorageSync('debug') && console.log('component----', '加载数据-ing',)
             // console.log('_apiData', _apiData)
-            let curentP = _apiData.offset/_apiData.limit;
+            let curentP = _apiData.offset / _apiData.limit;
             // 请求接口前设置loading状态
             // hasLoading = true;
             this.setData({
@@ -275,7 +275,7 @@ Component({
 
             // 使用promise模拟接口请求
             await new Promise((res, rej) => {
-                setTimeout(()=>{
+                setTimeout(() => {
                     // this.data.hasLoading=false;
                     this.setData({
                         hasLoading: false,
@@ -285,16 +285,16 @@ Component({
             });
             wx.getStorageSync('debug') && console.log('component----', '加载数据-end')
 
-            
+
             // 请求接口
             let list = [];
-            if(hasFirstPageData && !_hasUsedFirstInitData){
+            if (hasFirstPageData && !_hasUsedFirstInitData) {
                 list = initList;
                 this.data._hasUsedFirstInitData = true;
 
                 this.data._hasMoreMark = initHasMore;
                 // 没有更多回调
-                if(!this.data._hasMoreMark){
+                if (!this.data._hasMoreMark) {
                     this.noMoreFn();
                 }
             } else {
@@ -303,9 +303,9 @@ Component({
                     hasLoading: true,
                 });
                 // 使用promise模拟接口请求
-                if(_hasMock){
+                if (_hasMock) {
                     await new Promise((res, rej) => {
-                        setTimeout(()=>{
+                        setTimeout(() => {
                             this.setData({
                                 hasLoading: false,
                             });
@@ -313,24 +313,24 @@ Component({
                         }, 200)
                     });
                     let testList = [];
-                    for(var i=0;i < _apiData.limit;i++){
+                    for (var i = 0; i < _apiData.limit; i++) {
                         testList.push({
                             // item数据
-                            height: Math.floor(Math.random()*200) + 100,
+                            height: Math.floor(Math.random() * 200) + 100,
                             num: i,
                         });
                     }
                     list = testList;
 
-                    if(curentP >= Math.ceil(Math.random()*10 + 2)){
+                    if (curentP >= Math.ceil(Math.random() * 10 + 2)) {
                         this.data._hasMoreMark = false;
                     }
                     // 没有更多回调
-                    if(!this.data._hasMoreMark){
+                    if (!this.data._hasMoreMark) {
                         this.noMoreFn();
                     }
-                }else{
-                    
+                } else {
+
                     let resp = await app.$fetch({
                         url: apiInfo.url,
                         data: {
@@ -348,10 +348,10 @@ Component({
                     if (resp.error_num === 0 && content) {
                         let listMore = true;
                         let keyArr = dataKey.split('.');
-                        if(keyArr[1]){
+                        if (keyArr[1]) {
                             list = content[keyArr[0]][keyArr[1]] || [];
                             listMore = content[keyArr[0]][moreKey];
-                        }else{
+                        } else {
                             list = content[keyArr[0]] || [];
                             listMore = content[moreKey];
                         }
@@ -359,10 +359,10 @@ Component({
                         // 标记是否还有更多，这渲染完数据后渲染是否有更多
                         this.data._hasMoreMark = listMore;
                         // 没有更多回调
-                        if(!this.data._hasMoreMark){
+                        if (!this.data._hasMoreMark) {
                             this.noMoreFn();
                         }
-                    }else{
+                    } else {
                         // 错误提示
                         this.setData({
                             hasMore: false,
@@ -370,24 +370,24 @@ Component({
                         return;
                     }
                 }
-                
+
             }
 
             // 当前页数
             this.data._currentPageNumber = curentP;
 
             // 数据处理，给每条数据标识上页码
-            list.forEach((item)=>{
+            list.forEach((item) => {
                 item.pageNumber = this.data._currentPageNumber;
             });
 
             // 更新请求页码
             this.data._apiData.offset += this.data._apiData.limit;
-            
+
             // this.setData({
             //     hasMore: true,
             // }, async ()=>{
-                
+
             // });
 
             // 将数据存储起来，瀑布流渲染完成后才能存储起来
@@ -404,7 +404,7 @@ Component({
 
         },
         // 瀑布流渲染
-        waterfallRender(list){
+        waterfallRender(list) {
             let self = this;
             // console.log('list-', list);
             // 如果没有数据则不进行瀑布流渲染
@@ -415,13 +415,13 @@ Component({
             // 开始渲染瀑布流标识
             this.data._hasWaterfallRenderEnd = false;
 
-            return new Promise((resolve, reject)=>{
+            return new Promise((resolve, reject) => {
                 this.setData({
                     invisibleList: list,
-                }, ()=>{
-                    await setTimeout(async ()=>{  // 这里需要做个延迟，不然获取的高度可能会因未渲染完成而获取到错误的高度
+                }, () => {
+                    await setTimeout(async () => {  // 这里需要做个延迟，不然获取的高度可能会因未渲染完成而获取到错误的高度
                         let waterFallInvisible = '#' + this.data.recycleListContentId + '-render';
-                    
+
                         let query = self.createSelectorQuery();
                         // console.log(this.data.recycleListContentId + '-fallLeft')
                         query.select('#' + this.data.recycleListContentId + '-fallLeft').boundingClientRect();
@@ -429,7 +429,7 @@ Component({
                         query.selectAll(`${waterFallInvisible} .invisible-item`).boundingClientRect();
                         query.exec((res) => {
                             // console.log('res---1----', res, res[2])
-                            if(res){
+                            if (res) {
                                 let leftH = res[0].height;
                                 let rightH = res[1].height;
                                 let arrayListH = res[2];
@@ -441,30 +441,30 @@ Component({
                                 // arrayListH.forEach((item)=>{});
                                 let leftFallD = {};
                                 let rightFallD = {};
-                                for(var i=0;i<arrayListH.length;i++){
+                                for (var i = 0; i < arrayListH.length; i++) {
                                     // console.log('i', arrayListH[i])
                                     let item = list[i];
                                     // 对比左右列表高度
-                                    if(leftH + currentPagetLeftH <= rightH + currentPagetRightH){
+                                    if (leftH + currentPagetLeftH <= rightH + currentPagetRightH) {
                                         currentPagetLeftH += arrayListH[i].height;
                                         // 判断左边列表当前页码是否存在列表，如果不存在则初始化一个
-                                        if(!leftFallD.list){
+                                        if (!leftFallD.list) {
                                             leftFallD.list = [];
                                         }
                                         leftFallD.height = currentPagetLeftH;
                                         leftFallD.list.push(item);
 
-                                    }else{
+                                    } else {
                                         currentPagetRightH += arrayListH[i].height;
                                         // 判断左边列表当前页码是否存在列表，如果不存在则初始化一个
-                                        if(!rightFallD.list){
+                                        if (!rightFallD.list) {
                                             rightFallD.list = [];
                                         }
                                         rightFallD.height = currentPagetRightH;
                                         rightFallD.list.push(item);
                                     }
                                 }
-                                if(!this.data._bakListData[this.data._currentPageNumber]){
+                                if (!this.data._bakListData[this.data._currentPageNumber]) {
                                     this.data._bakListData[this.data._currentPageNumber] = {}
                                 }
 
@@ -483,33 +483,33 @@ Component({
             });
         },
         // 左右高度对比
-        diffLeftAndRightHeight(){
+        diffLeftAndRightHeight() {
             let leftHeight = 0;
             let rightHeight = 0;
             // 获取左边高度
-            return new Promise((resolve, reject)=>{
+            return new Promise((resolve, reject) => {
                 let query = this.createSelectorQuery();
-                query.select(`#${this.data.recycleListContentId}-fallLeft`).boundingClientRect() -100;
-                query.select(`#${this.data.recycleListContentId}-fallRight`).boundingClientRect() -100;
+                query.select(`#${this.data.recycleListContentId}-fallLeft`).boundingClientRect() - 100;
+                query.select(`#${this.data.recycleListContentId}-fallRight`).boundingClientRect() - 100;
                 query.exec((res) => {
-                    if(res && res.length && res[0]) {
+                    if (res && res.length && res[0]) {
                         leftHeight = res[0].height;
                         rightHeight = res[1].height;
                     }
                     // console.log('左右高度', leftHeight, rightHeight)
-                    resolve({leftHeight, rightHeight});
+                    resolve({ leftHeight, rightHeight });
                 });
             });
         },
         // 根据滚动页码获取需要显示数据
-        getShowData(){
+        getShowData() {
             // console.log('this.data._hasWaterfallRenderEnd--', this.data._hasWaterfallRenderEnd, this.data.scrollPageNumber, this.data._bakListData)
             // 如果还在进行瀑布流渲染，则不让重新计算，否则会有问题
             if (!this.data._hasWaterfallRenderEnd) {
                 return;
             }
 
-            let listData = [];  
+            let listData = [];
             /* listData数据格式
             [
                 // 第一列
@@ -521,21 +521,21 @@ Component({
             */
 
             // 先分列
-            let c=0
-            for(c; c < this.data.columnNumber;c++){
-                listData[c]=[];
+            let c = 0
+            for (c; c < this.data.columnNumber; c++) {
+                listData[c] = [];
             }
 
             // 轮询，将对应的数据高度和初始化list放到对应的分列的对应页码上，目的是将不需要渲染的页码数据设置高度，让其占据对应的高度
-            this.data._bakListData.forEach((item, i)=>{
-                let {left, right} = item;
-                if(left){
+            this.data._bakListData.forEach((item, i) => {
+                let { left, right } = item;
+                if (left) {
                     listData[i] = {
                         left: {
                             height: left.height,
                         },
                         right: {
-                            height:right.height,
+                            height: right.height,
                         }
                     }
                 }
@@ -544,25 +544,25 @@ Component({
             // console.log('this.data._bakListData----2', this.data._bakListData);
 
             // 根据页码获取当前页码前后1页的数据，将对应页码的数据全部替换掉
-            if(this.data.scrollPageNumber>=1){
-                listData[this.data.scrollPageNumber-1] = this.data._bakListData[this.data.scrollPageNumber-1];
+            if (this.data.scrollPageNumber >= 1) {
+                listData[this.data.scrollPageNumber - 1] = this.data._bakListData[this.data.scrollPageNumber - 1];
             }
-            if(this.data._bakListData[this.data.scrollPageNumber]){
+            if (this.data._bakListData[this.data.scrollPageNumber]) {
                 listData[this.data.scrollPageNumber] = this.data._bakListData[this.data.scrollPageNumber];
             }
 
-            if(this.data._bakListData[this.data.scrollPageNumber+1]){
-                listData[this.data.scrollPageNumber+1] = this.data._bakListData[this.data.scrollPageNumber+1];
+            if (this.data._bakListData[this.data.scrollPageNumber + 1]) {
+                listData[this.data.scrollPageNumber + 1] = this.data._bakListData[this.data.scrollPageNumber + 1];
             }
 
             let leftData = [];
             let rightData = [];
 
             // 先将格式化后的数据筛选出来直接渲染
-            listData.forEach((item, i)=>{
-                if(item && item.list){
+            listData.forEach((item, i) => {
+                if (item && item.list) {
                     unSx = item.list
-                }else{
+                } else {
                     leftData.push(item.left);
                     rightData.push(item.right);
                 }
@@ -575,7 +575,7 @@ Component({
                 leftFallData: leftData,
                 rightFallData: rightData,
                 listData,
-            }, ()=>{
+            }, () => {
                 this.setData({
                     hasMore: this.data._hasMoreMark,
                 });
@@ -583,7 +583,7 @@ Component({
         },
 
         // 获取滚动高度，来计算当前页码
-        getPageScrollTop(){
+        getPageScrollTop() {
             let self = this;
 
             var query = this.createSelectorQuery()
@@ -593,16 +593,16 @@ Component({
                 let scrollP = 0;
 
                 // 判断左右两边，哪边矮，则以哪边的高度计算翻页的页码
-                let offsetLeftTop = Math.abs(res.top-self.data._showHeight+self.data._diffHeight);
-                let offsetRightTop = Math.abs(res.top-self.data._showHeight+self.data._diffHeight);
+                let offsetLeftTop = Math.abs(res.top - self.data._showHeight + self.data._diffHeight);
+                let offsetRightTop = Math.abs(res.top - self.data._showHeight + self.data._diffHeight);
                 // console.log('------', offsetLeftTop, self.data._bakListData, self.data._bakListData.length, self.data._hasWaterfallRenderEnd)
-                self.data._bakListData.forEach((item, i)=>{
-                    if(offsetLeftTop >= 0 && offsetRightTop >= 0){
+                self.data._bakListData.forEach((item, i) => {
+                    if (offsetLeftTop >= 0 && offsetRightTop >= 0) {
                         scrollP = i;
-                        if(item.left && item.left.height){
+                        if (item.left && item.left.height) {
                             offsetLeftTop -= item.left.height;
                         }
-                        if(item.right && item.right.height){
+                        if (item.right && item.right.height) {
                             offsetRightTop -= item.right.height;
                         }
                     }
@@ -611,7 +611,7 @@ Component({
 
                 // 判断上一次的备份页码和现在计算出来的页码是否相同，如果相同就不做处理（目的优化性能）
                 // console.log(self.data._bakScrollPageNumber, scrollP)
-                if(self.data._bakScrollPageNumber === scrollP){
+                if (self.data._bakScrollPageNumber === scrollP) {
                     return;
                 }
                 // wx.getStorageSync('debug') && console.log('scrollP---', scrollP)
@@ -621,8 +621,8 @@ Component({
                 self.data._bakScrollPageNumber = scrollP;
 
                 self.setData({
-                    scrollPageNumber : scrollP,
-                }, ()=>{
+                    scrollPageNumber: scrollP,
+                }, () => {
                     // 获取显示的页码数据
                     self.getShowData();
                     // console.log(self.data.scrollPageNumber)
@@ -631,7 +631,7 @@ Component({
         },
 
         // 无限滚动列表内部，所有滚动元素前面的元素高度有变化后需要调用下修正差值，也就是在 #recycleWaterList-content 内部，第一个 recycleList-item 前面的元素
-        getScrollBeforeHeight(){
+        getScrollBeforeHeight() {
             let self = this;
             var query = this.createSelectorQuery()
             query.select(`#${this.data.recycleListContentId}-before`).boundingClientRect(function (res) {
@@ -640,7 +640,7 @@ Component({
             }).exec();
         },
 
-        beforeChangeHeight(){
+        beforeChangeHeight() {
             // this.setData({
             //     testBeforeHeight: this.data.testBeforeHeight + 100,
             // }, ()=>{
@@ -649,11 +649,10 @@ Component({
         },
 
         // 没有更多数据时触发
-        noMoreFn(){
+        noMoreFn() {
             // 触发父级的没有更多回调函数
             this.triggerEvent('noMoreCallback');
         },
     }
-  });
-  
-  
+});
+
